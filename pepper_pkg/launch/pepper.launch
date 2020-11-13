@@ -1,5 +1,10 @@
 <launch>
 
+    <param name="look_at_service" value="look_at" />
+    <param name="take_picture_topic" value="/take_picture" />
+    <param name="object_list_topic" value="/object_list" />
+
+    <node name="controller" pkg="pepper_pkg" type="master_node" output="screen" />
     <node name="camera" pkg="pepper_pkg" type="camera_node" output="screen" />
     <node name="detector" pkg="pepper_pkg" type="detector_node" output="screen" />
     <node name="head" pkg="pepper_pkg" type="head_node" output="screen" />
