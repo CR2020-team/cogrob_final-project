@@ -1,0 +1,2 @@
+sensor_msgs/Image       image
+int8                    direction
