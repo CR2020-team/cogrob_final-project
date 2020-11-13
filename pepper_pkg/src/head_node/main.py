@@ -39,6 +39,10 @@ class HeadNode(NaoqiNode):
 
 def main():
   HeadNode().start()
+  try:
+    rospy.spin()
+  except (KeyboardInterrupt, rospy.exceptions) as e:
+    rospy.loginfo("shutdown: %s" % e)
 
 
 if __name__ == "__main__":

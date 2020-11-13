@@ -11,7 +11,7 @@ class CameraNode(NaoqiNode):
   __slots__ = 'videoDeviceProxy', 'videoDevice', '_pub'
 
   def __init__(self):
-    NaoqiNode.__init__(self, 'master_node')
+    NaoqiNode.__init__(self, 'camera_node')
     self.connectNaoQi()
     cameraID = 0  # CameraID 0 means TopCamera
     resolution = 3  # Resolution 3 means Image of 1280*960px
@@ -53,6 +53,10 @@ class CameraNode(NaoqiNode):
 
 def main():
   CameraNode().start()
+  try:
+    rospy.spin()
+  except (KeyboardInterrupt, rospy.exceptions) as e:
+    rospy.loginfo("shutdown: %s" % e)
 
 
 if __name__ == "__main__":
