@@ -43,16 +43,10 @@ class DetectorNode:
     message = Detection2DArrayWithDirection()
     for clabel, score, box in zip(detections['detection_classes'], detections['detection_scores'], detections['detection_boxes']):
       if clabel in classmap:
-        d = Detection2D()
-        d.bbox.size_x = box[3] - box[1]
-        d.bbox.size_y = box[2] - box[0]
-        d.bbox.center.x = box[1] + d.bbox.size_x / 2
-        d.bbox.center.y = box[0] + d.bbox.size_y / 2
         o = ObjectHypothesisWithPose()
         o.score = score
-        o.id = clabel
-        d.results.append(o)
-        message.detections.detections.append(d)
+        o.id = classmap[clabel]
+        message.detections.append(o)
     message.direction = direction
     self._pub.publish(message)
 
@@ -67,7 +61,11 @@ class DetectorNode:
 
 def main():
   DetectorNode().start(verbose=True)
-    
+  try:
+    rospy.spin()
+  except (KeyboardInterrupt, rospy.exceptions) as e:
+    rospy.loginfo("shutdown: %s" % e)
+
 
 if __name__ == "__main__":
   main()

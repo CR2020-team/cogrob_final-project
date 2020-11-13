@@ -1,2 +1,2 @@
-vision_msgs/Detection2DArray    detections
-int8                            direction
+vision_msgs/ObjectHypothesisWithPose[]      detections
+int8                                        direction
