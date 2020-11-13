@@ -39,7 +39,7 @@ class CameraNode(NaoqiNode):
     image = np.zeros((height, width), np.uint8)
     values = map(ord, list(result[6]))
     i = 0
-    for x in range(width):  
+    for x in range(width):
       for y in range(height):
         for z in range(3):
           image.itemset((y, x, z), values[i + z])

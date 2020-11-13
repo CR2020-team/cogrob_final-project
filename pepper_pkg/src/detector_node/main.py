@@ -27,7 +27,7 @@ class DetectorNode:
 
   SCORE_TH = 0.45
 
-  __slots__ = 'detector', '_pub', 'image_paths'
+  __slots__ = 'detector', '_pub', '_verbose'
 
   def __init__(self, detector_model_name='efficientdet_d7_coco17_tpu-32'):
     rospy.init_node('detector_node')
@@ -59,20 +59,14 @@ class DetectorNode:
   def start(self, verbose=False):
     rospy.Subscriber(rospy.get_param('image_topic'), ImageWithDirection, self.rcv_image_cb)
     self._pub = rospy.Publisher(rospy.get_param('object_list_topic'), Detection2DArrayWithDirection, queue_size=0)
+    self._verbose = verbose
 
-    for image_path in self.image_paths:
-      self(image_path, verbose=verbose)
-    rospy.loginfo(f"All {len(self.image_paths)} images with detections published. Exiting ...")
-
-  def rcv_image_cv(self, msg):
-    self(CvBridge().imgmsg_to_cv2(msg.image), msg.direction)
+  def rcv_image_cb(self, msg):
+    self(CvBridge().imgmsg_to_cv2(msg.image), msg.direction, self._verbose)
 
 
 def main():
-  try:
-    DetectorNode().start(verbose=True)
-  except KeyboardInterrupt | rospy.exceptions:
-    rospy.loginfo(f"Shutting down Detector Node")
+  DetectorNode().start(verbose=True)
     
 
 if __name__ == "__main__":

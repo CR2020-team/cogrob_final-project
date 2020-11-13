@@ -26,9 +26,9 @@ class HeadNode(NaoqiNode):
 
   def handle_look_at(self, req):
     self.motionProxy.setStiffnesses("Head", 1.0)
-    names  = ["HeadPitch", "HeadYaw"]
-    angles  = [0, self.CAMERA_FOV * req.direction]
-    fractionMaxSpeed  = 0.5
+    names = ["HeadPitch", "HeadYaw"]
+    angles = [0, self.CAMERA_FOV * req.direction]
+    fractionMaxSpeed = 0.5
     self.motionProxy.setAngles(names, angles, fractionMaxSpeed)
     while True:
       currentAngles = self.motionProxy.getAngles(names, True)
