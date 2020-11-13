@@ -8,7 +8,7 @@ from pepper_msgs.msg import ImageWithDirection
 
 class CameraNode(NaoqiNode):
 
-  __slots__ = 'videoDeviceProxy', 'videoDevice', 'pub'
+  __slots__ = 'videoDeviceProxy', 'videoDevice', '_pub'
 
   def __init__(self):
     NaoqiNode.__init__(self, 'master_node')
@@ -26,7 +26,7 @@ class CameraNode(NaoqiNode):
   
   def start(self):
     rospy.Subscriber(rospy.get_param("take_picture_topic"), int, self.take_picture_cb)
-    self.pub = rospy.Publisher(rospy.get_param('image_topic'), ImageWithDirection, queue_size=0)
+    self._pub = rospy.Publisher(rospy.get_param('image_topic'), ImageWithDirection, queue_size=0)
 
   def take_picture_cb(self, direction):
     result = self.videoDeviceProxy.getImageRemote(self.videoDevice)
@@ -48,7 +48,7 @@ class CameraNode(NaoqiNode):
     message = ImageWithDirection()
     message.image = image
     message.direction = direction
-    self.pub.publish(message)
+    self._pub.publish(message)
     
 
 def main():
