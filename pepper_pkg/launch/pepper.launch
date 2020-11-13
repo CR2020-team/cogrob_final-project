@@ -1,5 +1,12 @@
 <launch>
 
+    <!-- PEPPER_IP_1: 10.0.1.207 -->
+    <!-- PEPPER_IP_2: 10.0.1.230 -->
+
+    <include file="$(find pepper_bringup)/launch/pepper_full.launch">
+        <arg name="nao_ip" value="10.0.1.230">
+    </include>
+
     <param name="look_at_service" value="look_at" />
     <param name="take_picture_topic" value="/take_picture" />
     <param name="image_topic" value="/raw_image" />
