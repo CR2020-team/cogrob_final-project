@@ -15,10 +15,10 @@ class CameraNode(NaoqiNode):
     cameraID = 0  # CameraID 0 means TopCamera
     resolution = 3  # Resolution 3 means Image of 1280*960px
     colorSpace = 13  # Color Space 13 means BGR
-    self.videoDevice = self.videoDeviceProxy("pepper_top_camera", 0, 3, 13)
+    self.videoDevice = self.videoDeviceProxy.subscribeCamera("pepper_top_camera", cameraID, resolution, colorSpace)
 
   def connectNaoQi(self):
-    rospy.loginfo("MasterNode connecting to NaoQi at %s:%d", self.pip, self.pport)
+    rospy.loginfo("CameraNode connecting to NaoQi at %s:%d", self.pip, self.pport)
     self.videoDeviceProxy = self.get_proxy("ALVideoDevice")
     if self.videoDeviceProxy is None:
       exit(1)
@@ -46,7 +46,7 @@ class CameraNode(NaoqiNode):
     
 
 def main():
-  pass
+  CameraNode().start()
 
 
 if __name__ == "__main__":
