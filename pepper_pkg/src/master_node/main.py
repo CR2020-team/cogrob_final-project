@@ -24,9 +24,16 @@ class MasterNode(NaoqiNode):
   
   def start(self):
     self.motionProxy.wakeUp()
-    self._look_at(1)
-    self._look_at(0)
-    self._look_at(-1)
+    
+    for direction in [1, 0, -1]
+      # Look at right, front, left
+      ret = self._look_at(direction)
+      if not ret:
+        exit(1)
+      # Take picture
+      rospy.Publisher(rospy.get_param('take_picture_topic'), int, queue_size=0).publish(direction)
+      # Wait
+      rospy.sleep(rospy.Duration(1.0))
 
   def _look_at(self, direction):
     service = rospy.get_param('look_at_service')
@@ -41,6 +48,10 @@ class MasterNode(NaoqiNode):
 
 def main():
   MasterNode().start()
+  try:
+    rospy.spin()
+  except (KeyboardInterrupt, rospy.exceptions) as e:
+    rospy.loginfo("shutdown: %s" % e)
 
 
 if __name__ == "__main__":
