@@ -3,11 +3,12 @@ import numpy as np
 import rospy
 from naoqi_driver.naoqi_node import NaoqiNode
 from cv_bridge import CvBridge
+from pepper_msgs.msg import ImageWithDirection
 
 
 class CameraNode(NaoqiNode):
 
-  __slots__ = 'videoDeviceProxy', 'videoDevice'
+  __slots__ = 'videoDeviceProxy', 'videoDevice', 'pub'
 
   def __init__(self):
     NaoqiNode.__init__(self, 'master_node')
@@ -25,6 +26,7 @@ class CameraNode(NaoqiNode):
   
   def start(self):
     rospy.Subscriber(rospy.get_param("take_picture_topic"), int, self.take_picture_cb)
+    self.pub = rospy.Publisher(rospy.get_param('image_topic'), ImageWithDirection, queue_size=0)
 
   def take_picture_cb(self, direction):
     result = self.videoDeviceProxy.getImageRemote(self.videoDevice)
@@ -42,7 +44,11 @@ class CameraNode(NaoqiNode):
         for z in range(3):
           image.itemset((y, x, z), values[i + z])
         i += 3
-    
+    image = CvBridge().cv2_to_imgmsg(image)
+    message = ImageWithDirection()
+    message.image = image
+    message.direction = direction
+    self.pub.publish(message)
     
 
 def main():
