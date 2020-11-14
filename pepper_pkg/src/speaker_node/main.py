@@ -30,7 +30,7 @@ class SpeakerNode(NaoqiNode):
         self.text += self._item_to_text(key, value)
     key, value = items[-1]
     self.text += " and "
-    self.text += self._item_to_text(key, value) += " "
+    self.text += self._item_to_text(key, value) + " "
     direction_to_text = {
       -1: "on the left.",
       0: "in front of me, ",
