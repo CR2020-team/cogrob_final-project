@@ -34,14 +34,13 @@ class SpeakerNode(NaoqiNode):
 
   def rcv_detections_cb(self, msg):
     self._counter += 1
-
     d = Counter(detection.clabel for detection in msg.detections)
     items = [self._item_to_text(key, value) for key, value in d.items()]
     self.text += ' and '.join([', '.join(items[:-1]), items[-1]]) + " " + self._direction_to_text[msg.direction]
     if self._counter == len(self._direction_to_text):
       # self.textToSpeechProxy.say(self.text)
-
-      rospy.loginfo(self.text)
+      
+      rospy.loginfo(self.text)  # FIXME
 
       self.text = "I can see: "
       self._counter = 0

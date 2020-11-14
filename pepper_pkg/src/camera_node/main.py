@@ -51,13 +51,13 @@ class CameraNode(NaoqiNode):
     #       image.itemset((y, x, z), values[i + z])
     #     i += 3
 
-    rospy.loginfo("I will take picture at direction {}".format(direction))
-    temp = direction + 1
-    image = cv2.imread("/home/vincenzo/cogrob/cogrob_exercises/Group26_ws/src/cogrob_midterm-project/pepper_pkg/src/camera_node/image{}.jpg".format(temp))
-    if image is not None:
-      rospy.loginfo("Loaded picture at direction {}".format(direction))
-    else:
-      rospy.loginfo("WTF")
+    rospy.loginfo("I will take picture at direction {}".format(direction))  # FIXME
+    temp = direction + 1  # FIXME
+    image = cv2.imread("/home/vincenzo/cogrob/cogrob_exercises/Group26_ws/src/cogrob_midterm-project/pepper_pkg/src/camera_node/image{}.jpg".format(temp))  # FIXME
+    if image is not None:  # FIXME
+      rospy.loginfo("Loaded picture at direction {}".format(direction))  # FIXME
+    else:  # FIXME
+      rospy.loginfo("WTF")  # FIXME
 
     image = CvBridge().cv2_to_imgmsg(image)
     message = ImageWithDirection()

@@ -38,8 +38,8 @@ class HeadNode(NaoqiNode):
     #   if np.all(np.array(angles) - np.array(currentAngles) < 1e-3):
     #     break
 
-    rospy.loginfo('Moving {} to {} with speed {} ...'.format(names, angles, fractionMaxSpeed))
-    rospy.sleep(rospy.Duration(2.0))
+    rospy.loginfo('Moving {} to {} with speed {} ...'.format(names, angles, fractionMaxSpeed))  # FIXME
+    rospy.sleep(rospy.Duration(2.0))  # FIXME
     
     return LookAtResponse(True)
 
