@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import os
 import cv2
 import numpy as np
 from PIL import Image
@@ -7,7 +8,7 @@ from cv_bridge import CvBridge
 from vision_msgs.msg import Detection2D, ObjectHypothesisWithPose
 from classmap import category_map as classmap  # https://gist.github.com/xhlulu/f7735970704b97fd0b72203628c1cc77
 from detector import Detector
-from pepper_msgs.msg import ImageWithDirection, Detection2DArrayWithDirection
+from pepper_msgs.msg import ImageWithDirection, DetectionArrayWithDirection, DetectionWithScore
 
 
 def load_image_into_numpy_array(path):
@@ -40,12 +41,12 @@ class DetectorNode:
     detections = self.detector(image, self.SCORE_TH)
     if verbose:
       rospy.loginfo(f"{detections['num_detections']} objects found at {direction}")
-    message = Detection2DArrayWithDirection()
-    for clabel, score, box in zip(detections['detection_classes'], detections['detection_scores'], detections['detection_boxes']):
+    message = DetectionArrayWithDirection()
+    for clabel, score in zip(detections['detection_classes'], detections['detection_scores']):
       if clabel in classmap:
-        o = ObjectHypothesisWithPose()
-        o.score = score
-        o.id = classmap[clabel]
+        d = DetectionWithScore()
+        d.clabel = classmap[clabel]
+        d.score = score
         message.detections.append(o)
     message.direction = direction
     self._pub.publish(message)
