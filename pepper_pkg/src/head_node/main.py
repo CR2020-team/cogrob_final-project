@@ -32,7 +32,7 @@ class HeadNode(NaoqiNode):
     self.motionProxy.setAngles(names, angles, fractionMaxSpeed)
     while True:
       currentAngles = self.motionProxy.getAngles(names, True)
-      if np.all(np.array(angles) - np.array(currentAngles) < 1e-3)):
+      if np.all(np.array(angles) - np.array(currentAngles) < 1e-3):
         break
     return LookAtResponse(True)
 

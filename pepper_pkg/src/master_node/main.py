@@ -25,7 +25,7 @@ class MasterNode(NaoqiNode):
   def start(self):
     self.motionProxy.wakeUp()
     
-    for direction in [1, 0, -1]
+    for direction in [1, 0, -1]:
       # Look at right, front, left
       ret = self._look_at(direction)
       if not ret:

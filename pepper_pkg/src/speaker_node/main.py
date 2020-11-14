@@ -41,7 +41,7 @@ class SpeakerNode(NaoqiNode):
       self.textToSpeechProxy.say(self.text)
       self.text = "I can see: "
 
-  def _item_to_text(key, value):
+  def _item_to_text(self, key, value):
     return "a {}".format(key) if value == 1 else "{} {}s".format(value, key) + ", "
 
 
