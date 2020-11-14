@@ -53,6 +53,7 @@ find_package(catkin REQUIRED
 add_message_files(
   FILES
   ImageWithDirection.msg
+  Detection2DArrayWithDirection.msg
 )
 
 ## Generate services in the 'srv' folder
