@@ -12,10 +12,13 @@ class HeadNode(NaoqiNode):
   __slots__ = 'motionProxy'
 
   def __init__(self):
-    NaoqiNode.__init__(self, 'master_node')
-    self.connectNaoQi()
+    # NaoqiNode.__init__(self, 'master_node')
+    # self.connectNaoQi()
+    rospy.init_node('master_node')
 
   def connectNaoQi(self):
+    self.pip = rospy.get_param('pip')
+    self.pport = rospy.get_param('pport')    
     rospy.loginfo("HeadNode connecting to NaoQi at %s:%d", self.pip, self.pport)
     self.motionProxy = self.get_proxy("ALMotion")
     if self.motionProxy is None:
@@ -25,15 +28,19 @@ class HeadNode(NaoqiNode):
     rospy.Service(rospy.get_param('look_at_service'), LookAt, self.handle_look_at)
 
   def handle_look_at(self, req):
-    self.motionProxy.setStiffnesses("Head", 1.0)
+    # self.motionProxy.setStiffnesses("Head", 1.0)
     names = ["HeadPitch", "HeadYaw"]
     angles = [0, self.CAMERA_FOV * req.direction]
     fractionMaxSpeed = 0.5
-    self.motionProxy.setAngles(names, angles, fractionMaxSpeed)
-    while True:
-      currentAngles = self.motionProxy.getAngles(names, True)
-      if np.all(np.array(angles) - np.array(currentAngles) < 1e-3):
-        break
+    # self.motionProxy.setAngles(names, angles, fractionMaxSpeed)
+    # while True:
+    #   currentAngles = self.motionProxy.getAngles(names, True)
+    #   if np.all(np.array(angles) - np.array(currentAngles) < 1e-3):
+    #     break
+
+    rospy.loginfo('Moving {} to {} with speed {} ...'.format(names, angles, fractionMaxSpeed))
+    rospy.sleep(rospy.Duration(2.0))
+    
     return LookAtResponse(True)
 
 

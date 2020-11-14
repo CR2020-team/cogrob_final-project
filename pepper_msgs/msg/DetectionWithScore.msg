@@ -1,2 +1,2 @@
-std_msgs/String     clabel
+string              clabel
 float64             score

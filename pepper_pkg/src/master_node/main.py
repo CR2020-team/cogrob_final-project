@@ -2,10 +2,7 @@
 import rospy
 from naoqi_driver.naoqi_node import NaoqiNode
 from pepper_msgs.srv import LookAt
-
-import sys
-import rospy
-from beginner_tutorials.srv import *
+from std_msgs.msg import Int8
 
 
 class MasterNode(NaoqiNode):
@@ -13,25 +10,27 @@ class MasterNode(NaoqiNode):
   __slots__ = 'motionProxy'
 
   def __init__(self):
-    NaoqiNode.__init__(self, 'master_node')
-    self.connectNaoQi()
+    # NaoqiNode.__init__(self, 'master_node')
+    # self.connectNaoQi()
+    rospy.init_node('master_node')
 
   def connectNaoQi(self):
+    self.pip = rospy.get_param('pip')
+    self.pport = rospy.get_param('pport')
     rospy.loginfo("MasterNode connecting to NaoQi at %s:%d", self.pip, self.pport)
     self.motionProxy = self.get_proxy("ALMotion")
     if self.motionProxy is None:
       exit(1)
   
   def start(self):
-    self.motionProxy.wakeUp()
-    
+    # self.motionProxy.wakeUp()
     for direction in [1, 0, -1]:
       # Look at right, front, left
       ret = self._look_at(direction)
       if not ret:
         exit(1)
       # Take picture
-      rospy.Publisher(rospy.get_param('take_picture_topic'), int, queue_size=0).publish(direction)
+      rospy.Publisher(rospy.get_param('take_picture_topic'), Int8, queue_size=0, latch=True).publish(Int8(data=direction))
       # Wait
       rospy.sleep(rospy.Duration(1.0))
 
