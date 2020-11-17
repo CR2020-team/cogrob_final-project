@@ -5,6 +5,7 @@ import cv2
 from naoqi_driver.naoqi_node import NaoqiNode
 from cv_bridge import CvBridge
 from pepper_msgs.msg import ImageWithDirection
+from pepper_msgs.srv import TakePicture, TakePictureResponse
 from std_msgs.msg import Int8
 from sensor_msgs.msg import Image
 from std_msgs.msg import Header
@@ -22,7 +23,6 @@ class CameraNode(NaoqiNode):
     resolution = 3  # Resolution 3 means Image of 1280*960px
     colorSpace = 13  # Color Space 13 means BGR
     self.videoDevice = self.videoDeviceProxy.subscribeCamera("pepper_top_camera", cameraID, resolution, colorSpace, 10)
-    # rospy.init_node('camera_node')
 
   def connectNaoQi(self):
     self.pip = rospy.get_param('pip')
@@ -35,50 +35,28 @@ class CameraNode(NaoqiNode):
     rospy.loginfo("ALVideoDevice successful!")
   
   def start(self):
-    rospy.Subscriber(rospy.get_param("take_picture_topic"), Int8, self.take_picture_cb)
+    rospy.Service(rospy.get_param('take_picture_service'), TakePicture, self.handle_take_picture)
     self._pub = rospy.Publisher(rospy.get_param('image_topic'), ImageWithDirection, queue_size=0, latch=True)
 
-  def take_picture_cb(self, direction):
-    direction = direction.data
+  def handle_take_picture(self, req):
+    direction = req.direction
     result = self.videoDeviceProxy.getImageRemote(self.videoDevice)
-    if result == None:
-      return None
-    if result[6] == None:
-      return None
-    # width = result[0]
-    # height = result[1]
-    # image = np.zeros((height, width), np.uint8)
-    # values = map(ord, list(result[6]))
-    # i = 0
-    # for x in range(width):
-    #   for y in range(height):
-    #     for z in range(3):
-    #       image.itemset((y, x, z), values[i + z])
-    #     i += 3
-
-    # rospy.loginfo("I will take picture at direction {}".format(direction))  # FIXME
-    # temp = direction + 1  # FIXME
-    # image = cv2.imread("/home/vincenzo/cogrob/cogrob_exercises/Group26_ws/src/cogrob_midterm-project/pepper_pkg/src/camera_node/image{}.jpg".format(temp))  # FIXME
-    # if image is not None:  # FIXME
-    #   rospy.loginfo("Loaded picture at direction {}".format(direction))  # FIXME
-    # else:  # FIXME
-    #   rospy.loginfo("WTF")  # FIXME
-
-    image = Image(
+    if result == None or result[6] == None:
+      return TakePictureResponse(False)
+    message = ImageWithDirection()
+    message.image = Image(
       header = Header(stamp=genpy.Time(secs=result[4], nsecs=1000*result[5])),
       height = result[1],
       width = result[0],
-      encoding = "bgr8",  # result[3],
+      encoding = "bgr8",
       is_bigendian = False,
       step = result[0] * result[2],
       data = result[6]
     )
-
-    message = ImageWithDirection()
-    message.image = image  # CvBridge().cv2_to_imgmsg(image)
     message.direction = direction
     self._pub.publish(message)
     rospy.loginfo("image for direction {} ready".format(direction))
+    return TakePictureResponse(True)
     
 
 def main():

@@ -12,7 +12,6 @@ class SpeakerNode(NaoqiNode):
   def __init__(self):
     NaoqiNode.__init__(self, 'speaker_node')
     self.connectNaoQi()
-    # rospy.init_node('speaker_node')
     self._direction_to_text = {
       -1: "on the left.",
       0: "in front of me, ",
@@ -28,6 +27,7 @@ class SpeakerNode(NaoqiNode):
     self.textToSpeechProxy = self.get_proxy("ALTextToSpeech")
     if self.textToSpeechProxy is None:
       exit(1)
+    self.textToSpeechProxy.setLanguage("English")
   
   def start(self):
     rospy.Subscriber(rospy.get_param('object_list_topic'), DetectionArrayWithDirection, self.rcv_detections_cb)

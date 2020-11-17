@@ -14,7 +14,6 @@ class HeadNode(NaoqiNode):
   def __init__(self):
     NaoqiNode.__init__(self, 'master_node')
     self.connectNaoQi()
-    # rospy.init_node('master_node')
 
   def connectNaoQi(self):
     self.pip = rospy.get_param('pip')
@@ -37,10 +36,6 @@ class HeadNode(NaoqiNode):
       currentAngles = self.motionProxy.getAngles(names, True)
       if np.all(np.array(angles) - np.array(currentAngles) < 1e-1):
         break
-
-    # rospy.loginfo('Moving {} to {} with speed {} ...'.format(names, angles, fractionMaxSpeed))  # FIXME
-    # rospy.sleep(rospy.Duration(2.0))  # FIXME
-    
     return LookAtResponse(True)
 
 

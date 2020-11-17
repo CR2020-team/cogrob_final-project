@@ -7,11 +7,11 @@
         <arg name="nao_ip" value="10.0.1.230" />
     </include> -->
 
-    <param name="pip" value="10.0.1.230" />
+    <param name="pip" value="10.0.1.207" />
     <param name="pport" value="$(optenv NAO_PORT 9559)" />
 
     <param name="look_at_service" value="look_at" />
-    <param name="take_picture_topic" value="/take_picture" />
+    <param name="take_picture_service" value="take_picture" />
     <param name="image_topic" value="/raw_image" />
     <param name="object_list_topic" value="/object_list" />
 
