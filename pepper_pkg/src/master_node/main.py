@@ -3,27 +3,27 @@ import rospy
 from naoqi_driver.naoqi_node import NaoqiNode
 from pepper_msgs.srv import LookAt
 from std_msgs.msg import Int8
-
+from naoqi import ALProxy
 
 class MasterNode(NaoqiNode):
 
   __slots__ = 'motionProxy'
 
   def __init__(self):
-    # NaoqiNode.__init__(self, 'master_node')
-    # self.connectNaoQi()
-    rospy.init_node('master_node')
+    NaoqiNode.__init__(self, 'master_node')
+    # rospy.init_node('master_node')
+    self.connectNaoQi()
 
   def connectNaoQi(self):
     self.pip = rospy.get_param('pip')
     self.pport = rospy.get_param('pport')
     rospy.loginfo("MasterNode connecting to NaoQi at %s:%d", self.pip, self.pport)
-    self.motionProxy = self.get_proxy("ALMotion")
+    self.motionProxy = self.get_proxy("ALRobotPosture")
     if self.motionProxy is None:
       exit(1)
-  
+      
   def start(self):
-    # self.motionProxy.wakeUp()
+    self.motionProxy.goToPosture("StandInit", 1.0)
     for direction in [1, 0, -1]:
       # Look at right, front, left
       ret = self._look_at(direction)
