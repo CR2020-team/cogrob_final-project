@@ -1,12 +1,8 @@
 #!/usr/bin/python
-import numpy as np
 import rospy
-import cv2
 from naoqi_driver.naoqi_node import NaoqiNode
-from cv_bridge import CvBridge
 from pepper_msgs.msg import ImageWithDirection
 from pepper_msgs.srv import TakePicture, TakePictureResponse
-from std_msgs.msg import Int8
 from sensor_msgs.msg import Image
 from std_msgs.msg import Header
 import genpy
@@ -27,7 +23,6 @@ class CameraNode(NaoqiNode):
   def connectNaoQi(self):
     self.pip = rospy.get_param('pip')
     self.pport = rospy.get_param('pport')
-    rospy.loginfo("I AM HERE")    
     rospy.loginfo("CameraNode connecting to NaoQi at %s:%d", self.pip, self.pport)
     self.videoDeviceProxy = self.get_proxy("ALVideoDevice")
     if self.videoDeviceProxy is None:

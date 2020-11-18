@@ -21,6 +21,7 @@ class MasterNode(NaoqiNode):
     self.motionProxy = self.get_proxy("ALRobotPosture")
     if self.motionProxy is None:
       exit(1)
+    rospy.loginfo("ALRobotPosture successful!")
       
   def start(self):
     self.motionProxy.goToPosture("StandInit", 1.0)

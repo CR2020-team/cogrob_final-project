@@ -64,7 +64,6 @@ class DetectorNode:
       self(image, direction)
 
   def rcv_image_cb(self, msg):
-    rospy.loginfo("HERE! {}".format(msg.direction))
     if self._ready:
       self(ros_numpy.numpify(msg.image), msg.direction)
     else:

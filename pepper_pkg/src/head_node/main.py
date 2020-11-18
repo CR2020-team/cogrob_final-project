@@ -22,6 +22,7 @@ class HeadNode(NaoqiNode):
     self.motionProxy = self.get_proxy("ALMotion")
     if self.motionProxy is None:
       exit(1)
+    rospy.loginfo("ALMotion successful!")
   
   def start(self):
     rospy.Service(rospy.get_param('look_at_service'), LookAt, self.handle_look_at)

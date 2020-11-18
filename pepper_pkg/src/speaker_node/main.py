@@ -28,6 +28,7 @@ class SpeakerNode(NaoqiNode):
     if self.textToSpeechProxy is None:
       exit(1)
     self.textToSpeechProxy.setLanguage("English")
+    rospy.loginfo("ALTextToSpeech successful!")
   
   def start(self):
     rospy.Subscriber(rospy.get_param('object_list_topic'), DetectionArrayWithDirection, self.rcv_detections_cb)
