@@ -25,7 +25,7 @@ class MasterNode(NaoqiNode):
       
   def start(self):
     self.motionProxy.goToPosture("StandInit", 1.0)
-    for direction in [1, 0, -1]:
+    for direction in [-1, 0, 1]:
       # Look at right, front, left
       ret = self._look_at(direction)
       if not ret:
@@ -35,7 +35,7 @@ class MasterNode(NaoqiNode):
       if not ret:
         exit(1)
       # Wait
-      rospy.sleep(rospy.Duration(1.0))
+      rospy.sleep(rospy.Duration(2.0))
     self.motionProxy.goToPosture("StandInit", 1.0)
 
   def _look_at(self, direction):

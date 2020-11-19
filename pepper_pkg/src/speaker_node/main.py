@@ -7,43 +7,47 @@ from pepper_msgs.msg import DetectionArrayWithDirection
 
 class SpeakerNode(NaoqiNode):
 
-  __slots__ = 'textToSpeechProxy', 'text', '_direction_to_text', '_counter'
+  __slots__ = 'animatedSpeechProxy', '_text_components', '_direction_to_text', '_counter'
 
   def __init__(self):
     NaoqiNode.__init__(self, 'speaker_node')
     self.connectNaoQi()
     self._direction_to_text = {
-      -1: "on the left.",
+      1: "on the left.",
       0: "in front of me, ",
-      1: "on the right, ",
+      -1: "on the right, ",
     }
-    self.text = "I can see: "
+    self._text_components = {key: None for key in self._direction_to_text.keys()}
     self._counter = 0
 
   def connectNaoQi(self):
     self.pip = rospy.get_param('pip')
     self.pport = rospy.get_param('pport')    
     rospy.loginfo("SpeakerNode connecting to NaoQi at %s:%d", self.pip, self.pport)
-    self.textToSpeechProxy = self.get_proxy("ALTextToSpeech")
-    if self.textToSpeechProxy is None:
+    self.animatedSpeechProxy = self.get_proxy("ALAnimatedSpeech")
+    if self.animatedSpeechProxy is None:
       exit(1)
-    self.textToSpeechProxy.setLanguage("English")
-    rospy.loginfo("ALTextToSpeech successful!")
+    self.animatedSpeechProxy.setBodyLanguageModeFromStr("contextual")
+    rospy.loginfo("ALAnimatedSpeech successful!")
   
   def start(self):
     rospy.Subscriber(rospy.get_param('object_list_topic'), DetectionArrayWithDirection, self.rcv_detections_cb)
 
   def rcv_detections_cb(self, msg):
+    direction = msg.direction
     self._counter += 1
     d = Counter(detection.clabel for detection in msg.detections)
     items = [self._item_to_text(key, value) for key, value in d.items()]
-    self.text += ' and '.join([', '.join(items[:-1]), items[-1]]) + " " + self._direction_to_text[msg.direction]
+    if len(items) > 0:
+        self._text_component[direction] = ' and '.join([', '.join(items[:-1]), items[-1]]) + " " + self._direction_to_text[direction]
+    else:
+        self._text_component[direction] = "nothing " + self._direction_to_text[msg.direction]
     if self._counter == len(self._direction_to_text):
-      self.textToSpeechProxy.say(self.text)
+      text = "I can see: " + self._text_components[-1] + self._text_components[0] + self._text_components[1]
       
-      rospy.loginfo(self.text)  # FIXME
-
-      self.text = "I can see: "
+      self.animatedSpeechProxy.say(text)
+      
+      rospy.loginfo(text)  # FIXME
       self._counter = 0
 
   def _item_to_text(self, key, value):
