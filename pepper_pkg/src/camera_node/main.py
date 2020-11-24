@@ -37,6 +37,7 @@ class CameraNode(NaoqiNode):
     direction = req.direction
     result = self.videoDeviceProxy.getImageRemote(self.videoDevice)
     if result == None or result[6] == None:
+      rospy.loginfo("Problem!")
       return TakePictureResponse(False)
     message = ImageWithDirection()
     message.image = Image(

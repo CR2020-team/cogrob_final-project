@@ -24,11 +24,12 @@ class SpeakerNode(NaoqiNode):
     self.pip = rospy.get_param('pip')
     self.pport = rospy.get_param('pport')    
     rospy.loginfo("SpeakerNode connecting to NaoQi at %s:%d", self.pip, self.pport)
-    self.animatedSpeechProxy = self.get_proxy("ALAnimatedSpeech")
+    self.animatedSpeechProxy = self.get_proxy("ALTextToSpeech")
     if self.animatedSpeechProxy is None:
       exit(1)
-    self.animatedSpeechProxy.setBodyLanguageModeFromStr("contextual")
-    rospy.loginfo("ALAnimatedSpeech successful!")
+    # self.animatedSpeechProxy.setBodyLanguageModeFromStr("contextual")
+    self.animatedSpeechProxy.setParameter("speed", 75)
+    rospy.loginfo("ALTextToSpeech successful!")
   
   def start(self):
     rospy.Subscriber(rospy.get_param('object_list_topic'), DetectionArrayWithDirection, self.rcv_detections_cb)
@@ -39,15 +40,15 @@ class SpeakerNode(NaoqiNode):
     d = Counter(detection.clabel for detection in msg.detections)
     items = [self._item_to_text(key, value) for key, value in d.items()]
     if len(items) > 0:
-        self._text_component[direction] = ' and '.join([', '.join(items[:-1]), items[-1]]) + " " + self._direction_to_text[direction]
+        self._text_components[direction] = ' and '.join([', '.join(items[:-1]), items[-1]]) + " " + self._direction_to_text[direction]
     else:
-        self._text_component[direction] = "nothing " + self._direction_to_text[msg.direction]
+        self._text_components[direction] = "nothing " + self._direction_to_text[msg.direction]
     if self._counter == len(self._direction_to_text):
       text = "I can see: " + self._text_components[-1] + self._text_components[0] + self._text_components[1]
       
+      rospy.loginfo(text)  # FIXME
       self.animatedSpeechProxy.say(text)
       
-      rospy.loginfo(text)  # FIXME
       self._counter = 0
 
   def _item_to_text(self, key, value):

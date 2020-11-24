@@ -53,7 +53,7 @@ class DetectorNode:
     rospy.loginfo("Detector published: {}".format(direction))
 
   def start(self, detector_model_name='efficientdet_d3_coco17_tpu-32', verbose=False):
-    self._pub = rospy.Publisher(rospy.get_param('object_list_topic'), DetectionArrayWithDirection, queue_size=0, latch=True)
+    self._pub = rospy.Publisher(rospy.get_param('object_list_topic'), DetectionArrayWithDirection, queue_size=0, latch=False)
     self._verbose = verbose
     DET_PATH = os.path.join(os.path.dirname(__file__), 'models', detector_model_name, 'saved_model')
     rospy.loginfo("Loading model...")
