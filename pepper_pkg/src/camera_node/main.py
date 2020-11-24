@@ -32,7 +32,7 @@ class CameraNode(NaoqiNode):
   def connectNaoQi(self):
     """
     Connects the node to the NaoQi interface. The parameters pip and pport are stored in the parameter server.
-    The Proxy used is ALVideoDevice in order to handle the image from camera
+    The Proxy used is ALVideoDevice in order to handle the image from camera.
     """
     self.pip = rospy.get_param('pip')
     self.pport = rospy.get_param('pport')
@@ -52,7 +52,8 @@ class CameraNode(NaoqiNode):
 
   def handle_take_picture(self, req):
     '''
-    Acquires the image from the camera and publishes it on the topic under the ImageWithDirection type.
+    Acquires the image from the camera and publishes it on the dedicated
+    topic with the ImageWithDirection message type.
     '''
     direction = req.direction
     result = self.videoDeviceProxy.getImageRemote(self.videoDevice)
