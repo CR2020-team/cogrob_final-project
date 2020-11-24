@@ -10,15 +10,14 @@ from pepper_msgs.srv import LookAt
 from pepper_msgs.srv import TakePicture
 from std_msgs.msg import Int8
 
+
 """Class used as an abstraction of the Node"""
 class MasterNode(NaoqiNode):
 
   __slots__ = 'motionProxy'
 
   def __init__(self):
-    """
-    Constructor. Creates the node and connects it to the NaoQi interface.
-    """
+    """Constructor. Creates the node and connects it to the NaoQi interface."""
     NaoqiNode.__init__(self, 'master_node')
     self.connectNaoQi()
 
