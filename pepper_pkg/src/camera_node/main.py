@@ -1,8 +1,7 @@
 #!/usr/bin/python
-'''
-This node starts the acquisition of images from Pepper's camera
-and provides the input for the Detection node.
-'''
+"""
+This node starts the acquisition of images from the robot's camera and provides the input for the detections.
+"""
 
 import rospy
 from naoqi_driver.naoqi_node import NaoqiNode
@@ -12,6 +11,7 @@ from sensor_msgs.msg import Image
 from std_msgs.msg import Header
 import genpy
 
+
 """Class used as an abstraction of the Node"""
 class CameraNode(NaoqiNode):
 
@@ -20,7 +20,7 @@ class CameraNode(NaoqiNode):
   def __init__(self):
     """
     Constructor. Creates the node, connects it to the NaoQi interface,
-    and makes a subriscription for acquiring the camera.
+    and subscribes the proper camera.
     """
     NaoqiNode.__init__(self, 'camera_node')
     self.connectNaoQi()
@@ -32,7 +32,7 @@ class CameraNode(NaoqiNode):
   def connectNaoQi(self):
     """
     Connects the node to the NaoQi interface. The parameters pip and pport are stored in the parameter server.
-    The Proxy used is ALVideoDevice in order to handle the image from camera.
+    The Proxy used is ALVideoDevice in order to handle the images from camera.
     """
     self.pip = rospy.get_param('pip')
     self.pport = rospy.get_param('pport')
@@ -45,16 +45,18 @@ class CameraNode(NaoqiNode):
   def start(self):
     """
     Actual execution of the node.
-    It creates a service server for taking pictures and starts to publish on the topic.
+    It creates a service server for taking pictures and a publisher to the ImageWithDirection topic.
     """
     rospy.Service(rospy.get_param('take_picture_service'), TakePicture, self.handle_take_picture)
     self._pub = rospy.Publisher(rospy.get_param('image_topic'), ImageWithDirection, queue_size=0, latch=True)
 
   def handle_take_picture(self, req):
-    '''
-    Acquires the image from the camera and publishes it on the dedicated
-    topic with the ImageWithDirection message type.
-    '''
+    """
+    The handler of the service request.
+    Acquires the image from the camera and publishes it on the ImageWithDirection topic.
+    The request is the direction at which the image must be taken.
+    The response is True when the picture is taken and published correctly, False otherwise.
+    """
     direction = req.direction
     result = self.videoDeviceProxy.getImageRemote(self.videoDevice)
     if result == None or result[6] == None:

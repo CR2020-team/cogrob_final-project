@@ -1,13 +1,13 @@
 #!/usr/bin/python
 """
-This node is the one that makes pepper speak. It receives the name of the objects detected by the
-detectore and the direction.
+This node is the one that makes the robot speak. It will say what the received detections contain.
 """
 
 from collections import Counter
 import rospy
 from naoqi_driver.naoqi_node import NaoqiNode
 from pepper_msgs.msg import DetectionArrayWithDirection
+
 
 """Class used as an abstraction of the Node"""
 class SpeakerNode(NaoqiNode):
@@ -17,9 +17,8 @@ class SpeakerNode(NaoqiNode):
   def __init__(self):
     """
     Constructor. Creates the node and connects it to the NaoQi interface.
-    It also initializes internal variables used to create and coordinate what pepper has to say.
+    It also initializes internal variables used to create and coordinate what the robot has to say.
     """
-
     NaoqiNode.__init__(self, 'speaker_node')
     self.connectNaoQi()
     self._direction_to_text = {
@@ -33,31 +32,31 @@ class SpeakerNode(NaoqiNode):
   def connectNaoQi(self):
     """
     Connects the node to the NaoQi interface. The parameters pip and pport are stored in the parameter server.
-    The Proxy used is ALTextToSpeech, in order to make the robot speech when the sentence is ready. In order to
-    make pepper move while speaking, we are using the animatedSpeech proxy, which will make pepper move according
-    to what it is saying.
+    The Proxy used is ALAnimatedSpeech, in order to make the robot speak when the sentence is ready and
+    make the robot move while speaking.
     """
     self.pip = rospy.get_param('pip')
     self.pport = rospy.get_param('pport')    
     rospy.loginfo("SpeakerNode connecting to NaoQi at %s:%d", self.pip, self.pport)
-    self.animatedSpeechProxy = self.get_proxy("ALTextToSpeech")
+    self.animatedSpeechProxy = self.get_proxy("ALAnimatedSpeech")
     if self.animatedSpeechProxy is None:
       exit(1)
-    # self.animatedSpeechProxy.setBodyLanguageModeFromStr("contextual")
-    self.animatedSpeechProxy.setParameter("speed", 75)
-    rospy.loginfo("ALTextToSpeech successful!")
+    self.animatedSpeechProxy.setBodyLanguageModeFromStr("contextual")
+    # self.animatedSpeechProxy.setParameter("speed", 75)
+    rospy.loginfo("ALAnimatedSpeech successful!")
   
   def start(self):
     """
-    The only operation performed when the node starts is the subscription to the topic and the linking of the callback.
+    Actual execution of the node.
+    The only operation performed when the node starts is the subscription to the DetectionArrayWithDirection topic and the linking of the callback.
     """
     rospy.Subscriber(rospy.get_param('object_list_topic'), DetectionArrayWithDirection, self.rcv_detections_cb)
 
   def rcv_detections_cb(self, msg):
     """
     Actual execution of the node. Upon receiving a new message on the topic, it stores a part of the sentence to say. 
-    The TTS will be performed when the three direction are into the sentence to say. In addition, if no object is detected on 
-    one side, pepper will say that it sees nothing.
+    The TTS will be performed when the three directions are all into the sentence to say. In addition, if no object is detected on 
+    one side, the robot will say that it sees nothing.
     """
     direction = msg.direction
     self._counter += 1

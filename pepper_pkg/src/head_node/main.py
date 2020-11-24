@@ -1,13 +1,13 @@
 #!/usr/bin/python
+"""
+This node represents moves the robot head in the desidered position.
+"""
 
-"""
-This node represents the server for the LookAt service,
-moves the head in the desidered position.
-"""
 import numpy as np
 import rospy
 from naoqi_driver.naoqi_node import NaoqiNode
 from pepper_msgs.srv import LookAt, LookAtResponse
+
 
 """Class used as an abstraction of the Node"""
 class HeadNode(NaoqiNode):
@@ -26,8 +26,8 @@ class HeadNode(NaoqiNode):
   def connectNaoQi(self):
     """
     Connects the node to the NaoQi interface. The parameters pip and pport are stored in the parameter server.
-    The Proxy used is AlMotion, in order to make the robot head go to the desidered position
-    when the service is request.
+    The Proxy used is ALMotion, in order to make the robot head go to the desidered position
+    when the service is called.
     """
     self.pip = rospy.get_param('pip')
     self.pport = rospy.get_param('pport')    
@@ -39,15 +39,16 @@ class HeadNode(NaoqiNode):
   
   def start(self):
     """
-    Create the server.
+    Actual execution of the node.
+    Creates the service server.
     """
     rospy.Service(rospy.get_param('look_at_service'), LookAt, self.handle_look_at)
 
   def handle_look_at(self, req):
     """
-    The callback of service.
+    The handler of the service request.
     The request is the desidered head position (right, front, left) represented as integers (-1, 0, 1).
-    The service response True when the position is reached (with an error of 0.1 rad).
+    The response is True when the position is reached (with an error less than 0.1 rad).
     """
     self.motionProxy.setStiffnesses("Head", 1.0)
     names = ["HeadPitch", "HeadYaw"]
@@ -62,6 +63,7 @@ class HeadNode(NaoqiNode):
 
 
 def main():
+  """Creates and executes the node."""
   HeadNode().start()
   try:
     rospy.spin()
