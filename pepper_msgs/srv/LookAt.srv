@@ -1,3 +1,7 @@
+# This service is used to ask the robot to look in a proper direction.
+# The request consists in an integer representing the direction to look at.
+# The response is True if the operation was successful, False otherwise.
+
 int8    direction
 
 ---
