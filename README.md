@@ -47,7 +47,7 @@ This message is used by two nodes:
   * **direction:** the direction at which the image is taken
 * [speaker_node](pepper_pkg/src/speaker_node/main.py): the node is a listener for this message. For each message received, it creates a string that specifies both the objects and the directions.
   * For example:
-    > I can see a bottle on the right, a PC in front of me, 2 TVs on the let.
+    > I can see a bottle on the right, a PC in front of me, 2 TVs on the left.
 
 #### DetectionWithScore
 
@@ -67,7 +67,7 @@ This message is used by two nodes:
   * **image:** the image taken from the camera, properly translated into a ROS image
   * **direction:** the direction at which the image is taken
 * [detector_node](pepper_pkg/src/detector_node/main.py): the node is a listener for this message. For each message received, it detects the objects contained in the image.
-  * Please note that the *direction* component is not used directly: it is just passed a component of the [DetectionArrayWithDirection](README.md#DetectionArrayWithDirection) message
+  * Please note that the *direction* component is not used directly: it is just passed as a component of the [DetectionArrayWithDirection](README.md#DetectionArrayWithDirection) message
 
 ### Services
 
