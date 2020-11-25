@@ -51,6 +51,14 @@ This message is used by two nodes:
 
 #### DetectionWithScore
 
+This message is used by only one node:
+
+* [detector_node](pepper_pkg/src/detector_node/main.py):
+  * For each object it detects, it creates a message with the following fields:
+    * **clabel:** the class label of the object
+    * **score:** the confidence score for the detectione
+  * This message is then added to the *detections* component of the [DetectionArrayWithDirection](README.md#DetectionArrayWithDirection) message
+
 #### ImageWithDirection
 
 ### Services
