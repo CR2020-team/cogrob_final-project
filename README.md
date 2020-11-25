@@ -7,9 +7,33 @@ Midterm project for Cognitive Robotics 2020/2021 - Group 26
 [assignment.pdf](assignment.pdf)
 
 ## Team Members
+
 * [Giovanni Ammendola](https://github.com/giorge1)
 * [Edoardo Maffucci](https://github.com/emaff)
 * [Vincenzo Petrone](https://github.com/v8p1197)
 * [Salvatore Scala](https://github.com/knowsx2)
+
+## Documentation
+
+The project is organized into 5 ROS nodes:
+
+* [camera_node](pepper_pkg/src/camera_node/main.py)
+    * Makes Pepper take pictures
+* [detector_node](pepper_pkg/src/detector_node/main.py)
+    * Performs object detections on pictures taken 
+* [head_node](pepper_pkg/src/head_node/main.py)
+    * Makes Pepper move the head left and right
+* [master_node](pepper_pkg/src/master_node/main.py)
+    * Coordinates the camera node and the head node: the picture is taken only when the head is in the correct position
+* [speaker_node](pepper_pkg/src/speaker_node/main.py)
+    * Makes Pepper speak, saying what she sees around 
+
+### Code
+
+For futher information about the implementation, please refer to the in-code documentation. Every node is fully documentated in the related `main.py` file.
+
+### Messages
+
+### Services
 
 ## Usage
