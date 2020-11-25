@@ -61,6 +61,14 @@ This message is used by only one node:
 
 #### ImageWithDirection
 
+This message is used by two nodes:
+
+* [camera_node](pepper_pkg/src/camera_node/main.py): for each image taken, it publishes a message with the following fields:
+  * **image:** the image taken from the camera, properly translated into a ROS image
+  * **direction:** the direction at which the image is taken
+* [detector_node](pepper_pkg/src/detector_node/main.py): the node is a listener for this message. For each message received, it detects the objects contained in the image.
+  * Please note that the *direction* component is not used directly: it is just passed a component of the [DetectionArrayWithDirection](README.md#DetectionArrayWithDirection) message
+
 ### Services
 
 The following services are defined in the [srv](pepper_msgs/srv) folder.
