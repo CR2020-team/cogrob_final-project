@@ -47,7 +47,7 @@ This message is used by two nodes:
   * **direction:** the direction at which the image is taken
 * [speaker_node](pepper_pkg/src/speaker_node/main.py): the node is a listener for this message. For each message received, it creates a string that specifies both the objects and the directions.
   * For example:
-    * > I can see a bottle on the right, a PC in front of me, 2 TVs on the let.
+    > I can see a bottle on the right, a PC in front of me, 2 TVs on the let.
 
 #### DetectionWithScore
 
