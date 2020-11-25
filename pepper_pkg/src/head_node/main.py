@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-This node represents moves the robot head in the desidered position.
+This node moves the robot head in the desidered position.
 """
 
 import numpy as np
