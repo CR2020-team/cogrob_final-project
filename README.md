@@ -13,7 +13,7 @@ Midterm project for Cognitive Robotics 2020/2021 - Group 26
 * [Vincenzo Petrone](https://github.com/v8p1197)
 * [Salvatore Scala](https://github.com/knowsx2)
 
-## Documentation
+## Architecture
 
 The project is organized into 5 ROS nodes:
 
@@ -28,12 +28,34 @@ The project is organized into 5 ROS nodes:
 * [speaker_node](pepper_pkg/src/speaker_node/main.py)
     * Makes Pepper speak, saying what she sees around 
 
+## Documentation
+
 ### Code
 
 For futher information about the implementation, please refer to the in-code documentation. Every node is fully documentated in the related `main.py` file.
 
 ### Messages
 
+The following messages are defined in the [msg](pepper_msgs/msg) folder.
+
+#### DetectionArrayWithDirection
+
+#### DetectionWithScore
+
+#### ImageWithDirection
+
 ### Services
 
+The following services are defined in the [srv](pepper_msgs/srv) folder.
+
+#### LookAt
+
+#### TakePicture
+
 ## Usage
+
+One can simply run the software with
+
+``` bash
+roslaunch pepper_pkg pepper.launch
+```
