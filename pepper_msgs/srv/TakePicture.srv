@@ -2,8 +2,8 @@
 # The request consists in an integer representing the direction at which the picture is taken.
 # The response is True if the operation was successful, False otherwise.
 
-int8    direction
+int8 direction
 
 ---
 
-bool    ready
+bool ready

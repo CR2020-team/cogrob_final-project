@@ -43,9 +43,7 @@ class DetectorNode:
     Creates the node, connects it to the NaoQi interface and subscribes it to the ImageWithDirection topic.
     """
     rospy.init_node('detector_node')
-    # _images is a dictionary with directions as keys and images as values  
     self._images = {}
-    # _ready is True if the detector is loaded, False otherwise
     self._ready = False
     rospy.Subscriber(rospy.get_param('image_topic'), ImageWithDirection, self.rcv_image_cb)
 
@@ -68,7 +66,7 @@ class DetectorNode:
     self._pub.publish(message)
     rospy.loginfo("Detector published: {}".format(direction))
 
-  def start(self, detector_model_name='efficientdet_d3_coco17_tpu-32', verbose=False):
+  def start(self, detector_model_name='efficientdet_d1_coco17_tpu-32', verbose=False):
     """
     Actual execution of the node.
     Creates a pulisher to the DetectionArrayWithDirection topic and loads the detector model.
@@ -89,6 +87,7 @@ class DetectorNode:
     If the model is loaded, performs a detection on the image.
     Otherwise, appends the image in a queue.
     """
+    rospy.loginfo("Received image {}".format(msg.direction))
     if self._ready:
       self(ros_numpy.numpify(msg.image), msg.direction)
     else:

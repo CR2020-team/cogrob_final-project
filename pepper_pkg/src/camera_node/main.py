@@ -11,7 +11,6 @@ from sensor_msgs.msg import Image
 from std_msgs.msg import Header
 import genpy
 
-
 """Class used as an abstraction of the Node"""
 class CameraNode(NaoqiNode):
 

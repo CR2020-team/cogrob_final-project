@@ -43,7 +43,7 @@ class SpeakerNode(NaoqiNode):
       exit(1)
     self.animatedSpeechProxy.setBodyLanguageModeFromStr("contextual")
     # self.animatedSpeechProxy.setParameter("speed", 75)
-    rospy.loginfo("ALAnimatedSpeech successful!")
+    rospy.loginfo("ALTextToSpeech successful!")
   
   def start(self):
     """
@@ -54,18 +54,21 @@ class SpeakerNode(NaoqiNode):
 
   def rcv_detections_cb(self, msg):
     """
-    Actual execution of the node. Upon receiving a new message on the topic, it stores a part of the sentence to say. 
-    The TTS will be performed when the three directions are all into the sentence to say. In addition, if no object is detected on 
+    Actual execution of the node. Upon receiving a new message on the topic, it stores a part of the sentence to say.
+    The TTS will be performed when the three directions are all into the sentence to say. In addition, if no object is detected on
     one side, the robot will say that it sees nothing.
     """
     direction = msg.direction
     self._counter += 1
     d = Counter(detection.clabel for detection in msg.detections)
     items = [self._item_to_text(key, value) for key, value in d.items()]
-    if len(items) > 0:
-        self._text_components[direction] = ' and '.join([', '.join(items[:-1]), items[-1]]) + " " + self._direction_to_text[direction]
+    if len(items) == 0:
+        self._text_components[direction] = "nothing " + self._direction_to_text[msg.direction]    
+    elif len(items) == 1:
+        self._text_components[direction] = items[0] + " " + self._direction_to_text[msg.direction]    
     else:
-        self._text_components[direction] = "nothing " + self._direction_to_text[msg.direction]
+        self._text_components[direction] = ' and '.join([', '.join(items[:-1]), items[-1]]) + " " + self._direction_to_text[direction]    
+    
     if self._counter == len(self._direction_to_text):
       text = "I can see: " + self._text_components[-1] + self._text_components[0] + self._text_components[1]
       
@@ -88,6 +91,7 @@ def main():
     rospy.spin()
   except (KeyboardInterrupt, rospy.exceptions) as e:
     rospy.loginfo("shutdown: %s" % e)
+
 
 if __name__ == "__main__":
     main()

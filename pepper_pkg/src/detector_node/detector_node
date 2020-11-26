@@ -52,7 +52,7 @@ class DetectorNode:
     self._pub.publish(message)
     rospy.loginfo("Detector published: {}".format(direction))
 
-  def start(self, detector_model_name='efficientdet_d3_coco17_tpu-32', verbose=False):
+  def start(self, detector_model_name='efficientdet_d1_coco17_tpu-32', verbose=False):
     self._pub = rospy.Publisher(rospy.get_param('object_list_topic'), DetectionArrayWithDirection, queue_size=0, latch=False)
     self._verbose = verbose
     DET_PATH = os.path.join(os.path.dirname(__file__), 'models', detector_model_name, 'saved_model')
@@ -64,6 +64,7 @@ class DetectorNode:
       self(image, direction)
 
   def rcv_image_cb(self, msg):
+    rospy.loginfo("Received image {}".format(msg.direction))
     if self._ready:
       self(ros_numpy.numpify(msg.image), msg.direction)
     else:
