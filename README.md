@@ -4,7 +4,7 @@ Midterm project for Cognitive Robotics 2020/2021 - Group 26
 
 ## Assignment
 
-[assignment.pdf](assignment.pdf)
+[assignment.pdf](doc/assignment.pdf)
 
 ## Team Members
 
@@ -90,8 +90,18 @@ This service is served by the camera node and is requested by the master node in
 
 ## Usage
 
-One can simply run the software with
+To use the software, first run
+
+``` bash
+roslaunch pepper_pkg detector.launch
+```
+
+Once the string `Loading model...` appears, run
 
 ``` bash
 roslaunch pepper_pkg pepper.launch
 ```
+
+as show in the following image, taken from the [demo video](doc/pepperVideo.mp4):
+
+![ScreenDetector](doc/screenDetector.png)
