@@ -23,9 +23,9 @@ class SpeakerNode(NaoqiNode):
         NaoqiNode.__init__(self, 'speaker_node')
         self.connectNaoQi()
         self._direction_to_text = {
-            1: "on the left.",
-            0: "in front of me, ",
-            -1: "on the right, ",
+            1: "on the left",
+            0: "in front of me",
+            -1: "on the right",
         }
         self._text_components = {key: None for key in self._direction_to_text.keys()}
         self._engine = inflect.engine()
@@ -58,7 +58,8 @@ class SpeakerNode(NaoqiNode):
 
     def rcv_detections_cb(self, msg):
         """
-        Actual execution of the node. Upon receiving a new message on the topic, it stores a part of the sentence to say.
+        Actual execution of the node.
+        Upon receiving a new message on the topic, it stores a part of the sentence to say.
         The TTS will be performed when the three directions are all into the sentence to say.
         In addition, if no object is detected on one side, the robot will say that it sees nothing.
         """
@@ -67,14 +68,16 @@ class SpeakerNode(NaoqiNode):
         d = Counter(detection.clabel for detection in msg.detections)
         items = [self._item_to_text(key, value) for key, value in d.items()]
         if len(items) == 0:
-            self._text_components[direction] = "nothing " + self._direction_to_text[msg.direction]
+            self._text_components[direction] = "nothing"
         elif len(items) == 1:
-            self._text_components[direction] = items[0] + " " + self._direction_to_text[msg.direction]
+            self._text_components[direction] = items[0]
         else:
-            self._text_components[direction] = ' and '.join([', '.join(items[:-1]), items[-1]]) + " " + self._direction_to_text[direction]
+            self._text_components[direction] = ' and '.join((', '.join(items[:-1]), items[-1]))
+        self._text_components[direction] += ' ' + self._direction_to_text[direction]
 
         if self._counter == len(self._direction_to_text):
-            text = "I can see: " + self._text_components[-1] + self._text_components[0] + self._text_components[1]
+            text = "I can see: " + ', '.join(
+                self._text_components[direction] for direction in sorted(self._text_components.keys())) + '.'
 
             rospy.loginfo(text)  # FIXME
             self.animatedSpeechProxy.say(text)
