@@ -57,7 +57,7 @@ class HeadNode(NaoqiNode):
             if not ret:
                 exit(1)
             # Wait
-            rospy.sleep(rospy.Duration(2.0))
+            rospy.sleep(rospy.Duration(1.0))
         self.postureProxy.goToPosture("StandInit", 1.0)
 
     def _look_at(self, direction):
