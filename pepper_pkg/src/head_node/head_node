@@ -74,11 +74,11 @@ class HeadNode(NaoqiNode):
         fractionMaxSpeed = 0.25
         self.motionProxy.setAngles(angles.keys(), angles.values(), fractionMaxSpeed)
         while True:
-            currentAngles = self.motionProxy.getAngles(names, True)
-            if np.all(np.array(angles) - np.array(currentAngles) < 5e-2):
+            currentAngles = self.motionProxy.getAngles(angles.keys(), True)
+            if np.all(np.array(angles.values()) - np.array(currentAngles) < 5e-2):
                 break
         return True
-        
+
     def _take_picture(self, direction):
         """
         Calls the TakePicture service.
