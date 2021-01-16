@@ -36,10 +36,11 @@ class CameraNode(NaoqiNode):
         self.pip = rospy.get_param('pip')
         self.pport = rospy.get_param('pport')
         rospy.loginfo("CameraNode connecting to NaoQi at %s:%d", self.pip, self.pport)
-        self.videoDeviceProxy = self.get_proxy("ALVideoDevice")
+        proxy = 'ALVideoDevice'
+        self.videoDeviceProxy = self.get_proxy(proxy)
         if self.videoDeviceProxy is None:
-            exit(1)
-        rospy.loginfo("ALVideoDevice successful!")
+            raise rospy.ROSInitException('Unable to connect to {} proxy!'.format(proxy))
+        rospy.loginfo("{} successful!".format(proxy))
 
     def start(self):
         """
@@ -71,8 +72,8 @@ class CameraNode(NaoqiNode):
         )
         ret = self.detect_image(image, direction)
         if not ret:
-            exit(1)
-        rospy.loginfo("image for direction {} ready".format(direction))
+            raise rospy.ROSException('Unable to detect objects for direction {}'.format(direction))
+        rospy.loginfo("Image for direction {} acquired".format(direction))
         return TakePictureResponse(True)
 
     def detect_image(self, image, direction):

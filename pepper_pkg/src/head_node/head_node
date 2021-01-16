@@ -20,7 +20,7 @@ class HeadNode(NaoqiNode):
         """
         Constructor. Creates the node and connects it to the NaoQi interface.
         """
-        NaoqiNode.__init__(self, 'master_node')
+        NaoqiNode.__init__(self, 'head_node')
         self.connectNaoQi()
 
     def connectNaoQi(self):
@@ -32,14 +32,16 @@ class HeadNode(NaoqiNode):
         self.pip = rospy.get_param('pip')
         self.pport = rospy.get_param('pport')
         rospy.loginfo("HeadNode connecting to NaoQi at %s:%d", self.pip, self.pport)
-        self.motionProxy = self.get_proxy("ALMotion")
+        proxy = 'ALMotion'
+        self.motionProxy = self.get_proxy(proxy)
         if self.motionProxy is None:
-            exit(1)
-        rospy.loginfo("ALMotion successful!")
-        self.postureProxy = self.get_proxy("ALRobotPosture")
+            raise rospy.ROSInitException('Unable to connect to {} proxy!'.format(proxy))
+        rospy.loginfo("{} successful!".format(proxy))
+        proxy = 'ALRobotPosture'
+        self.postureProxy = self.get_proxy(proxy)
         if self.postureProxy is None:
-            exit(1)
-        rospy.loginfo("ALRobotPosture successful!")
+            raise rospy.ROSInitException('Unable to connect to {} proxy!'.format(proxy))
+        rospy.loginfo("{} successful!".format(proxy))
 
     def start(self):
         """
@@ -51,11 +53,11 @@ class HeadNode(NaoqiNode):
             # Look at right, front, left
             ret = self._look_at(direction)
             if not ret:
-                exit(1)
+                raise rospy.ROSException('Unable to go to direction {}'.format(direction))
             # Take picture
             ret = self._take_picture(direction)
             if not ret:
-                exit(1)
+                raise rospy.ROSException('Unable to take picture at direction {}'.format(direction))
             # Wait
             rospy.sleep(rospy.Duration(1.0))
         self.postureProxy.goToPosture("StandInit", 1.0)

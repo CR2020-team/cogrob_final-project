@@ -40,12 +40,13 @@ class SpeakerNode(NaoqiNode):
         self.pip = rospy.get_param('pip')
         self.pport = rospy.get_param('pport')
         rospy.loginfo("SpeakerNode connecting to NaoQi at %s:%d", self.pip, self.pport)
-        self.animatedSpeechProxy = self.get_proxy("ALAnimatedSpeech")
+        proxy = 'ALAnimatedSpeech'
+        self.animatedSpeechProxy = self.get_proxy(proxy)
         if self.animatedSpeechProxy is None:
-            exit(1)
+            raise rospy.ROSInitException('Unable to connect to {} proxy!'.format(proxy))
         self.animatedSpeechProxy.setBodyLanguageModeFromStr("contextual")
         # self.animatedSpeechProxy.setParameter("speed", 75)
-        rospy.loginfo("ALTextToSpeech successful!")
+        rospy.loginfo("{} successful!".format(proxy))
 
     def start(self):
         """
