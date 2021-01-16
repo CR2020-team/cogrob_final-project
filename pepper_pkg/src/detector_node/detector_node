@@ -54,7 +54,7 @@ class DetectorNode:
     def start(self, detector_model_name='efficientdet_d1_coco17_tpu-32', verbose=False):
         """
         Actual execution of the node.
-        Creates a pulisher to the DetectionArrayWithDirection topic and loads the detector model.
+        Creates a publisher to the DetectionArrayWithDirection topic and loads the detector model.
         """
         rospy.Service(rospy.get_param('detector_service'), DetectImage, self.handle_detector)
         self._pub = rospy.Publisher(rospy.get_param('object_list_topic'), DetectionArrayWithDirection, queue_size=0, latch=False)
