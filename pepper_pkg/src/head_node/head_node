@@ -6,7 +6,7 @@ This node moves the robot head in the desidered position.
 import numpy as np
 import rospy
 from naoqi_driver.naoqi_node import NaoqiNode
-from pepper_msgs.srv import LookAt, LookAtResponse
+from pepper_msgs.srv import TakePicture
 
 
 class HeadNode(NaoqiNode):
@@ -36,15 +36,31 @@ class HeadNode(NaoqiNode):
         if self.motionProxy is None:
             exit(1)
         rospy.loginfo("ALMotion successful!")
+        self.postureProxy = self.get_proxy("ALRobotPosture")
+        if self.postureProxy is None:
+            exit(1)
+        rospy.loginfo("ALRobotPosture successful!")
 
     def start(self):
         """
         Actual execution of the node.
         Creates the service server.
         """
-        rospy.Service(rospy.get_param('look_at_service'), LookAt, self.handle_look_at)
+        self.postureProxy.goToPosture("StandInit", 1.0)
+        for direction in [-1, 0, 1]:
+            # Look at right, front, left
+            ret = self._look_at(direction)
+            if not ret:
+                exit(1)
+            # Take picture
+            ret = self._take_picture(direction)
+            if not ret:
+                exit(1)
+            # Wait
+            rospy.sleep(rospy.Duration(1.0))
+        self.postureProxy.goToPosture("StandInit", 1.0)
 
-    def handle_look_at(self, req):
+    def _look_at(self, direction):
         """
         The handler of the service request.
         The request is the desidered head position (right, front, left) represented as integers (-1, 0, 1).
@@ -53,15 +69,30 @@ class HeadNode(NaoqiNode):
         self.motionProxy.setStiffnesses("Head", 1.0)
         angles = {
             "HeadPitch": np.deg2rad(15),
-            "HeadYaw": self.CAMERA_FOV * req.direction,
+            "HeadYaw": self.CAMERA_FOV * direction,
         }
         fractionMaxSpeed = 0.25
         self.motionProxy.setAngles(angles.keys(), angles.values(), fractionMaxSpeed)
         while True:
             currentAngles = self.motionProxy.getAngles(angles.keys(), True)
-            if np.all(np.array(angles.values()) - np.array(currentAngles) < 1e-1):
+            if np.all(np.array(angles.values()) - np.array(currentAngles) < 3e-2):
                 break
-        return LookAtResponse(True)
+        return True
+
+    def _take_picture(self, direction):
+        """
+        Calls the TakePicture service.
+        The request is the current direction.
+        The response is the success of the service.
+        """
+        service = rospy.get_param('take_picture_service')
+        rospy.wait_for_service(service)
+        try:
+            take_picture = rospy.ServiceProxy(service, TakePicture)
+            return take_picture(direction).ready
+        except rospy.ServiceException as exc:
+            print("Service call failed: %s" % exc)
+            return False
 
 
 HeadNode().start()
