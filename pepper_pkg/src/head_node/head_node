@@ -6,7 +6,7 @@ This node moves the robot head in the desidered position.
 import numpy as np
 import rospy
 from naoqi_driver.naoqi_node import NaoqiNode
-from pepper_msgs.srv import LookAt, LookAtResponse
+from pepper_msgs.srv import TakePicture
 
 
 class HeadNode(NaoqiNode):
@@ -75,7 +75,7 @@ class HeadNode(NaoqiNode):
         self.motionProxy.setAngles(angles.keys(), angles.values(), fractionMaxSpeed)
         while True:
             currentAngles = self.motionProxy.getAngles(angles.keys(), True)
-            if np.all(np.array(angles.values()) - np.array(currentAngles) < 5e-2):
+            if np.all(np.array(angles.values()) - np.array(currentAngles) < 3e-2):
                 break
         return True
 
