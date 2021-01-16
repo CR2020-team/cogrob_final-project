@@ -77,7 +77,7 @@ class HeadNode(NaoqiNode):
         self.motionProxy.setAngles(angles.keys(), angles.values(), fractionMaxSpeed)
         while True:
             currentAngles = self.motionProxy.getAngles(angles.keys(), True)
-            if np.all(np.array(angles.values()) - np.array(currentAngles) < 3e-2):
+            if np.all(np.absolute(np.array(angles.values()) - np.array(currentAngles)) < 3e-2):
                 break
         return True
 
