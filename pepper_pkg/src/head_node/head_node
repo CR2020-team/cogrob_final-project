@@ -12,7 +12,7 @@ from pepper_msgs.srv import TakePicture
 class HeadNode(NaoqiNode):
     """Class used as an abstraction of the Node"""
 
-    CAMERA_FOV = np.deg2rad(55.2)
+    CAMERA_FOV = np.deg2rad(56.3)
 
     __slots__ = 'motionProxy'
 
