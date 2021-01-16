@@ -1,9 +1,0 @@
-<launch>
-
-    <param name="image_topic" value="/raw_image" />
-    <param name="object_list_topic" value="/object_list" />
-
-    <node name="detector" pkg="pepper_pkg" type="detector_node" output="screen" />
-
-</launch>
-

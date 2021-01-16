@@ -1,1 +1,89 @@
-main.py
+#!/usr/bin/python3
+"""
+This node detects objects in images.
+"""
+
+import os
+from threading import Lock
+import rospy
+from classmap import category_map as classmap  # https://gist.github.com/xhlulu/f7735970704b97fd0b72203628c1cc77
+from pepper_msgs.msg import DetectionArrayWithDirection, DetectionWithScore
+from pepper_msgs.srv import DetectImage
+import ros_numpy
+
+
+class DetectorNode:
+    """Class used as an abstraction of the Node"""
+
+    """Detections with a confidence score lower than SCORE_TH will not be considered as actual detections."""
+    SCORE_TH = 0.45
+
+    __slots__ = 'detector', '_pub', '_verbose', '_images', '_ready', '_lock'
+
+    def __init__(self):
+        """
+        Constructor.
+        Creates the node, connects it to the NaoQi interface and subscribes it to the ImageWithDirection topic.
+        """
+        rospy.init_node('detector_node')
+        self._images = {}
+        self._ready = False
+        self._lock = Lock()
+
+    def __call__(self, image, direction, verbose=False):
+        """
+        Runs inference in image, performing detections on it.
+        Publishes a message containing DetectionArrayWithDirection.
+        """
+        self._lock.acquire()
+        detections = self.detector(image, self.SCORE_TH)
+        if verbose:
+            rospy.loginfo("{} objects found at {}".format(detections['num_detections'], direction))
+        message = DetectionArrayWithDirection()
+        for clabel, score in zip(detections['detection_classes'], detections['detection_scores']):
+            if clabel in classmap:
+                d = DetectionWithScore()
+                d.clabel = classmap[clabel]
+                d.score = score
+                message.detections.append(d)
+        message.direction = direction
+        self._pub.publish(message)
+        rospy.loginfo("Detector published: {}".format(direction))
+        self._lock.release()
+
+    def start(self, detector_model_name='efficientdet_d1_coco17_tpu-32', verbose=False):
+        """
+        Actual execution of the node.
+        Creates a pulisher to the DetectionArrayWithDirection topic and loads the detector model.
+        """
+        rospy.Service(rospy.get_param('detector_service'), DetectImage, self.handle_detector)
+        self._pub = rospy.Publisher(rospy.get_param('object_list_topic'), DetectionArrayWithDirection, queue_size=0, latch=False)
+        self._verbose = verbose
+        DET_PATH = os.path.join(os.path.dirname(__file__), 'models', detector_model_name, 'saved_model')
+        rospy.loginfo("Loading model...")
+        from detector import Detector
+        self.detector = Detector(DET_PATH)
+        self._ready = True
+        rospy.loginfo("Model loaded!")
+        for direction, image in self._images.items():
+            self(image, direction)
+
+    def handle_detector(self, req):
+        """
+        Callback used by the ImageWithDirection subscriber.
+        If the model is loaded, performs a detection on the image.
+        Otherwise, appends the image in a queue.
+        """
+        rospy.loginfo("Received image {}".format(req.direction))
+        if self._ready:
+            self(ros_numpy.numpify(req.image), req.direction)
+        else:
+            self._images[req.direction] = ros_numpy.numpify(req.image)
+        return True
+
+
+DetectorNode().start(verbose=True)
+try:
+    rospy.spin()
+except (KeyboardInterrupt, rospy.exceptions) as e:
+    rospy.loginfo("shutdown: %s" % e)
