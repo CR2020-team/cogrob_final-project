@@ -10,7 +10,6 @@ from classmap import category_map as classmap  # https://gist.github.com/xhlulu/
 from pepper_msgs.msg import DetectionArrayWithDirection, DetectionWithScore
 from pepper_msgs.srv import DetectImage
 import ros_numpy
-import cv2
 
 
 class DetectorNode:
@@ -76,7 +75,6 @@ class DetectorNode:
         Otherwise, appends the image in a queue.
         """
         rospy.loginfo("Received image {}".format(req.direction))
-        cv2.imshow("image {}".format(req.direction), ros_numpy.numpify(req.image))
         if self._ready:
             self(ros_numpy.numpify(req.image), req.direction)
         else:
