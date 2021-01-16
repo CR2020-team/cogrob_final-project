@@ -84,7 +84,7 @@ class SpeakerNode(NaoqiNode):
         """
         Utility function that return the objects with the corresponding article or number.
         """
-        return self._engine.a(key) if value == 1 else "{} {}".format(value, self._engine.plural(key))
+        return str(self._engine.a(key)) if value == 1 else "{} {}".format(value, self._engine.plural(key))
 
 
 SpeakerNode().start()
