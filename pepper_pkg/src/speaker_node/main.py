@@ -69,8 +69,7 @@ class SpeakerNode(NaoqiNode):
     elif len(items) == 1:
       self._text_components[direction] = items[0] + " " + self._direction_to_text[msg.direction]
     else:
-      self._text_components[direction] = ' and '.join([', '.join(items[:-1]), items[-1]]) + " " + \
-                                         self._direction_to_text[direction]
+      self._text_components[direction] = ' and '.join([', '.join(items[:-1]), items[-1]]) + " " + self._direction_to_text[direction]
 
     if self._counter == len(self._direction_to_text):
       text = "I can see: " + self._text_components[-1] + self._text_components[0] + self._text_components[1]
@@ -80,14 +79,11 @@ class SpeakerNode(NaoqiNode):
 
       self._counter = 0
 
-  def _plural(self, word):
-    return self._engine.plural(word)
-
   def _item_to_text(self, key, value):
     """
     Utility function that return the objects with the corresponding article or number.
     """
-    return "a {}".format(key) if value == 1 else "{} {}".format(value, self._plural(key))
+    return self._engine.a(key) if value == 1 else "{} {}".format(value, self._engine.plural(key))
 
 
 def main():
