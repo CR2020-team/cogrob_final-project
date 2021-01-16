@@ -16,7 +16,7 @@
     <param name="take_picture_service" value="/take_picture" />
 
     <node name="camera" pkg="pepper_pkg" type="camera_node" output="screen" />
-    <node name="detector" pkg="pepper_pkg" type="detector_node" output="=screen" />
+    <node name="detector" pkg="pepper_pkg" type="detector_node" output="screen" />
     <node name="head" pkg="pepper_pkg" type="head_node" output="screen" />
     <node name="speaker" pkg="pepper_pkg" type="speaker_node" output="screen" />
 
