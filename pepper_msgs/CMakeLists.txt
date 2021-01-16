@@ -54,12 +54,12 @@ add_message_files(
   FILES
   DetectionArrayWithDirection.msg
   DetectionWithScore.msg
-  ImageWithDirection.msg
 )
 
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
+  DetectImage.srv
   LookAt.srv
   TakePicture.srv
 )
