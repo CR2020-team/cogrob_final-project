@@ -3,6 +3,7 @@
 This node is the one that makes the robot speak. It will say what the received detections contain.
 """
 
+import inflect
 from collections import Counter
 import rospy
 from naoqi_driver.naoqi_node import NaoqiNode
@@ -12,7 +13,7 @@ from pepper_msgs.msg import DetectionArrayWithDirection
 """Class used as an abstraction of the Node"""
 class SpeakerNode(NaoqiNode):
 
-  __slots__ = 'animatedSpeechProxy', '_text_components', '_direction_to_text', '_counter'
+  __slots__ = 'animatedSpeechProxy', '_text_components', '_direction_to_text', '_counter', '_engine'
 
   def __init__(self):
     """
@@ -27,6 +28,7 @@ class SpeakerNode(NaoqiNode):
       -1: "on the right, ",
     }
     self._text_components = {key: None for key in self._direction_to_text.keys()}
+    self._engine = inflect.engine()
     self._counter = 0
 
   def connectNaoQi(self):
@@ -36,7 +38,7 @@ class SpeakerNode(NaoqiNode):
     make the robot move while speaking.
     """
     self.pip = rospy.get_param('pip')
-    self.pport = rospy.get_param('pport')    
+    self.pport = rospy.get_param('pport')
     rospy.loginfo("SpeakerNode connecting to NaoQi at %s:%d", self.pip, self.pport)
     self.animatedSpeechProxy = self.get_proxy("ALAnimatedSpeech")
     if self.animatedSpeechProxy is None:
@@ -44,7 +46,7 @@ class SpeakerNode(NaoqiNode):
     self.animatedSpeechProxy.setBodyLanguageModeFromStr("contextual")
     # self.animatedSpeechProxy.setParameter("speed", 75)
     rospy.loginfo("ALTextToSpeech successful!")
-  
+
   def start(self):
     """
     Actual execution of the node.
@@ -63,25 +65,29 @@ class SpeakerNode(NaoqiNode):
     d = Counter(detection.clabel for detection in msg.detections)
     items = [self._item_to_text(key, value) for key, value in d.items()]
     if len(items) == 0:
-        self._text_components[direction] = "nothing " + self._direction_to_text[msg.direction]    
+      self._text_components[direction] = "nothing " + self._direction_to_text[msg.direction]
     elif len(items) == 1:
-        self._text_components[direction] = items[0] + " " + self._direction_to_text[msg.direction]    
+      self._text_components[direction] = items[0] + " " + self._direction_to_text[msg.direction]
     else:
-        self._text_components[direction] = ' and '.join([', '.join(items[:-1]), items[-1]]) + " " + self._direction_to_text[direction]    
-    
+      self._text_components[direction] = ' and '.join([', '.join(items[:-1]), items[-1]]) + " " + \
+                                         self._direction_to_text[direction]
+
     if self._counter == len(self._direction_to_text):
       text = "I can see: " + self._text_components[-1] + self._text_components[0] + self._text_components[1]
-      
+
       rospy.loginfo(text)  # FIXME
       self.animatedSpeechProxy.say(text)
-      
+
       self._counter = 0
+
+  def _plural(self, word):
+    return self._engine.plural(word)
 
   def _item_to_text(self, key, value):
     """
     Utility function that return the objects with the corresponding article or number.
     """
-    return "a {}".format(key) if value == 1 else "{} {}s".format(value, key)
+    return "a {}".format(key) if value == 1 else "{} {}".format(value, self._plural(key))
 
 
 def main():
@@ -94,4 +100,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+  main()
