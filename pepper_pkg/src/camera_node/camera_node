@@ -59,7 +59,7 @@ class CameraNode(NaoqiNode):
         direction = req.direction
         result = self.videoDeviceProxy.getImageRemote(self.videoDevice)
         if result is None or result[6] is None:
-            rospy.loginfo("Problem with camera while acquiring image!")
+            rospy.logerr("Problem with camera while acquiring image!")
             return TakePictureResponse(False)
         image = Image(
             header=Header(stamp=genpy.Time(secs=result[4], nsecs=1000 * result[5])),
@@ -72,7 +72,8 @@ class CameraNode(NaoqiNode):
         )
         ret = self.detect_image(image, direction)
         if not ret:
-            raise rospy.ROSException('Unable to detect objects for direction {}'.format(direction))
+            rospy.logerr('Unable to detect objects for direction {}'.format(direction))
+            return TakePictureResponse(False)
         rospy.loginfo("Image for direction {} acquired".format(direction))
         return TakePictureResponse(True)
 
