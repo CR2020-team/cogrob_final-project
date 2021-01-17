@@ -1,6 +1,6 @@
 ## Messages Documentation
 
-#### DetectionArrayWithDirection
+### DetectionArrayWithDirection
 
 This message is used by two nodes:
 
@@ -11,7 +11,7 @@ This message is used by two nodes:
   * For example:
     > I can see a bottle on the right, a PC in front of me, 2 TVs on the left.
 
-#### DetectionWithScore
+### DetectionWithScore
 
 This message is used by only one node:
 
