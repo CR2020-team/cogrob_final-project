@@ -23,7 +23,7 @@ class DetectorNode:
     def __init__(self):
         """
         Constructor.
-        Creates the node, connects it to the NaoQi interface and subscribes it to the ImageWithDirection topic.
+        Creates the node and connects it to the NaoQi interface.
         """
         rospy.init_node('detector_node')
         self._images = {}
@@ -33,7 +33,7 @@ class DetectorNode:
     def __call__(self, image, direction, verbose=False):
         """
         Runs inference in image, performing detections on it.
-        Publishes a message containing DetectionArrayWithDirection.
+        Publishes a DetectionArrayWithDirection message containing direction and the detected objects.
         """
         self._lock.acquire()
         detections = self.detector(image, self.SCORE_TH)
@@ -54,6 +54,7 @@ class DetectorNode:
         """
         Actual execution of the node.
         Creates a publisher to the DetectionArrayWithDirection topic and loads the detector model.
+        It also creates a service server for detect objects in a picture.
         """
         rospy.Service(rospy.get_param('detector_service'), DetectImage, self.handle_detector)
         self._pub = rospy.Publisher(rospy.get_param('object_list_topic'), DetectionArrayWithDirection, queue_size=0, latch=False)
@@ -69,9 +70,10 @@ class DetectorNode:
 
     def handle_detector(self, req):
         """
-        Callback used by the ImageWithDirection subscriber.
-        If the model is loaded, performs a detection on the image.
-        Otherwise, appends the image in a queue.
+        The handler of the service request.
+        If the model is loaded, performs a detection on the image. Otherwise, appends the image in a queue.
+        The request is image and the direction at which the image has been taken.
+        The response is True when the picture is processed by the detector correctly.
         """
         if self._ready:
             self(ros_numpy.numpify(req.image), req.direction, self._verbose)
