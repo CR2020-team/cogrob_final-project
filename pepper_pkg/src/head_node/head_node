@@ -49,17 +49,18 @@ class HeadNode(NaoqiNode):
         Creates the service server.
         """
         self.postureProxy.goToPosture("StandInit", 1.0)
+        rospy.sleep(rospy.Duration(1.0))
         for direction in [-1, 0, 1]:
             # Look at right, front, left
             ret = self._look_at(direction)
             if not ret:
                 raise rospy.ROSException('Unable to go to direction {}'.format(direction))
+            # Wait
+            rospy.sleep(rospy.Duration(1.0))
             # Take picture
             ret = self._take_picture(direction)
             if not ret:
                 raise rospy.ROSException('Unable to take picture at direction {}'.format(direction))
-            # Wait
-            rospy.sleep(rospy.Duration(1.0))
         self.postureProxy.goToPosture("StandInit", 1.0)
 
     def _look_at(self, direction):
@@ -76,8 +77,9 @@ class HeadNode(NaoqiNode):
         fractionMaxSpeed = 0.25
         self.motionProxy.setAngles(angles.keys(), angles.values(), fractionMaxSpeed)
         while True:
+            rospy.sleep(rospy.Duration(0.1))
             currentAngles = self.motionProxy.getAngles(angles.keys(), True)
-            if np.all(np.absolute(np.array(angles.values()) - np.array(currentAngles)) < 3e-2):
+            if np.all(np.absolute(np.array(angles.values()) - np.array(currentAngles)) < 1e-1):
                 break
         return True
 
