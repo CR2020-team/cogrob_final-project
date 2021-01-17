@@ -1,6 +1,6 @@
-# cogrob_midterm-project
+# cogrob_final-project
 
-Midterm project for Cognitive Robotics 2020/2021 - Group 26
+Final project for Cognitive Robotics 2020/2021 - Group 26
 
 ## Assignment
 
