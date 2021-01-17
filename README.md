@@ -15,24 +15,22 @@ Final project for Cognitive Robotics 2020/2021 - Group 26
 
 ## Architecture
 
-The project is organized into 5 ROS nodes:
+The project is organized into 4 ROS nodes:
 
-* [camera_node](pepper_pkg/src/camera_node/main.py)
+* [camera_node](pepper_pkg/src/camera_node/camera_node)
   * Makes Pepper take pictures
-* [detector_node](pepper_pkg/src/detector_node/main.py)
+* [detector_node](pepper_pkg/src/detector_node/detector_node)
   * Performs object detections on pictures taken 
-* [head_node](pepper_pkg/src/head_node/main.py)
+* [head_node](pepper_pkg/src/head_node/head_node)
   * Makes Pepper move the head left and right
-* [master_node](pepper_pkg/src/master_node/main.py)
-  * Coordinates the camera node and the head node: the picture is taken only when the head is in the correct position
-* [speaker_node](pepper_pkg/src/speaker_node/main.py)
+* [speaker_node](pepper_pkg/src/speaker_node/speaker_node)
   * Makes Pepper speak, saying what she sees around 
 
 ## Documentation
 
 ### Code
 
-For futher information about the implementation, please refer to the in-code documentation. Every node is fully documentated in the related `main.py` file.
+For futher information about the implementation, please refer to the in-code documentation. Every node is fully documentated in the related file.
 
 ### Messages
 
@@ -42,10 +40,10 @@ The following messages are defined in the [msg](pepper_msgs/msg) folder.
 
 This message is used by two nodes:
 
-* [detector_node](pepper_pkg/src/detector_node/main.py): for each image it receives, it publishes a message with the following fields:
-  * **detections:** the classes of the objects seen in the image, along with the confidence scores
-  * **direction:** the direction at which the image is taken
-* [speaker_node](pepper_pkg/src/speaker_node/main.py): the node is a listener for this message. For each message received, it creates a string that specifies both the objects and the directions.
+* [detector_node](pepper_pkg/src/detector_node/detector_node): for each image it receives, it publishes a message with the following fields:
+  * `detections`: the classes of the objects seen in the image, along with the confidence scores
+  * `direction`: the direction at which the image has been taken
+* [speaker_node](pepper_pkg/src/speaker_node/speaker_node): the node is a listener for this message. For each message received, it creates a string that specifies both the objects and the directions.
   * For example:
     > I can see a bottle on the right, a PC in front of me, 2 TVs on the left.
 
@@ -53,55 +51,36 @@ This message is used by two nodes:
 
 This message is used by only one node:
 
-* [detector_node](pepper_pkg/src/detector_node/main.py):
+* [detector_node](pepper_pkg/src/detector_node/detector_node):
   * For each object it detects, it creates a message with the following fields:
-    * **clabel:** the class label of the object
-    * **score:** the confidence score for the detection
-  * This message is then added to the *detections* component of the [DetectionArrayWithDirection](README.md#DetectionArrayWithDirection) message
-
-#### ImageWithDirection
-
-This message is used by two nodes:
-
-* [camera_node](pepper_pkg/src/camera_node/main.py): for each image taken, it publishes a message with the following fields:
-  * **image:** the image taken from the camera, properly translated into a ROS image
-  * **direction:** the direction at which the image is taken
-* [detector_node](pepper_pkg/src/detector_node/main.py): the node is a listener for this message. For each message received, it detects the objects contained in the image.
-  * Please note that the *direction* component is not used directly: it is just passed as a component of the [DetectionArrayWithDirection](README.md#DetectionArrayWithDirection) message
-
+    * `clabel`: the class label of the object
+    * `score`: the confidence score for the detection
+  * This message is then added to the `detections` component of the [DetectionArrayWithDirection](README.md#DetectionArrayWithDirection) message
+    
 ### Services
 
 The following services are defined in the [srv](pepper_msgs/srv) folder.
 
-#### LookAt
-
-This service is served by the head node and is requested by the master node in order to make the head move to a specific angle.
-
-* [head_node](pepper_pkg/src/head_node/main.py) is the node that makes the head move. Upon receiving a request, it will start the movement of the head and will send a `True` response only when the position is reached. 
-* [master_node](pepper_pkg/src/master_node/main.py) is the master node that uses the service. Before taking a picture, the node must be sure that the head is in the right position, so it will check that the response is the one expected.
-
-
 #### TakePicture
 
-This service is served by the camera node and is requested by the master node in order to take a picture. Since the picture will be published on the topic, the requests take as parameter the current position of the head.
+This service is served by the [camera node](pepper_pkg/src/camera_node/camera_node) and is requested by the [head node](pepper_pkg/src/head_node/head_node) in order to take a picture. Since the picture will be forwarded to the [DetectImage](README.md#DetectImage) service, the requests take as parameter the current position of the head.
 
-* [camera_node](pepper_pkg/src/camera_node/main.py) is the node that takes the picture and publish it on the topic. Upon receiving a request, it will take the picture, create an [ImageWithDirection](README.md#ImageWithDirection) message and will send a `True` response only if the operation is successful.
-* [master_node](pepper_pkg/src/master_node/main.py) is the master node that uses the service. Before taking a picture, the node must be sure that the head is in the right position.
+* [camera_node](pepper_pkg/src/camera_node/camera_node) upon receiving a request, takes the picture, forwards it to the [DetectImage](README.md#DetectImage) service along with the direction and sends a `True` response if and only if the operation is successful.
+* [head_node](pepper_pkg/src/head_node/head_node) is the only service client. Before taking a picture, the node must be sure that the head is in the right position.
+
+#### DetectImage
+
+This service is served by the [detector node](pepper_pkg/src/detector_node/detector_node) and is requested by the [camera node](pepper_pkg/src/camera_node/camera_node) in order to detect objects in a picture. Since the picture will be published on a [DetectionArrayWithDirection](README.md#DetectionArrayWithDirection) message, the requests take as parameter the direction at which the given image has been taken.
+
+* [detector_node](pepper_pkg/src/detector_node/detector_node) upon receiving a request, gives the picture as input to the detector model, creates a [DetectionArrayWithDirection](README.md#DetectionArrayWithDirection) message containing the detected objects and publishes it to the proper topic; sends a `True` response if and only if the operation is successful.
+* [camera_node](pepper_pkg/src/camera_node/camera_node) is the only service client. Creates a request by passing as parameter the image taken and its proper direction
 
 ## Usage
 
-To use the software, first run
+To use the software, just run
 
 ``` bash
-roslaunch pepper_pkg detector.launch
+roslaunch pepper_pkg pepper.launch pepper_id:=id
 ```
 
-Once the string `Loading model...` appears, run
-
-``` bash
-roslaunch pepper_pkg pepper.launch
-```
-
-as show in the following image, taken from the [demo video](doc/pepperVideo.mp4):
-
-![ScreenDetector](doc/screenDetector.png)
+Where `id` is either 1 or 2 depending on which pepper robot the software bill be executed. If not specified, `pepper_id` is 1.
