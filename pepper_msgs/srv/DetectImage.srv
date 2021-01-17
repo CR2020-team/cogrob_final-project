@@ -1,3 +1,9 @@
+# This service is used to ask the detector to detect objects in a picture acquired at a proper direction.
+# The request consists in:
+# image: the image acquired to detect objects in
+# direction: an integer representing the direction at which the picture has been taken
+# The response is True if the operation was successful, False otherwise.
+
 sensor_msgs/Image       image
 int8                    direction
 
