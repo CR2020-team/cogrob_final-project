@@ -10,6 +10,7 @@ from classmap import category_map as classmap  # https://gist.github.com/xhlulu/
 from pepper_msgs.msg import DetectionArrayWithDirection, DetectionWithScore
 from pepper_msgs.srv import DetectImage
 import ros_numpy
+import cv2
 
 
 class DetectorNode:
@@ -37,8 +38,6 @@ class DetectorNode:
         """
         self._lock.acquire()
         detections = self.detector(image, self.SCORE_TH)
-        if verbose:
-            rospy.loginfo("{} objects found at {}".format(detections['num_detections'], direction))
         message = DetectionArrayWithDirection()
         for clabel, score in zip(detections['detection_classes'], detections['detection_scores']):
             if clabel in classmap:
@@ -48,7 +47,9 @@ class DetectorNode:
                 message.detections.append(d)
         message.direction = direction
         self._pub.publish(message)
-        rospy.loginfo("{} objects detected in image at direction {}".format(len(message.detections), direction))
+        if verbose:
+            rospy.loginfo("{} objects detected in image at direction {}".format(len(message.detections), direction))
+        cv2.imwrite('image{}.jpg'.format(direction), image)
         self._lock.release()
 
     def start(self, detector_model_name='efficientdet_d1_coco17_tpu-32', verbose=False):
@@ -66,7 +67,7 @@ class DetectorNode:
         self._ready = True
         rospy.loginfo("Model loaded!")
         for direction, image in self._images.items():
-            self(image, direction)
+            self(image, direction, self._verbose)
 
     def handle_detector(self, req):
         """
@@ -75,7 +76,7 @@ class DetectorNode:
         Otherwise, appends the image in a queue.
         """
         if self._ready:
-            self(ros_numpy.numpify(req.image), req.direction)
+            self(ros_numpy.numpify(req.image), req.direction, self._verbose)
         else:
             self._images[req.direction] = ros_numpy.numpify(req.image)
         return True
