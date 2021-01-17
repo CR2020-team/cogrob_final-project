@@ -20,8 +20,7 @@ class CameraNode(NaoqiNode):
 
     def __init__(self):
         """
-        Constructor. Creates the node, connects it to the NaoQi interface,
-        and subscribes the proper camera.
+        Constructor. Creates the node, connects it to the NaoQi interface, and subscribes the proper camera.
         """
         NaoqiNode.__init__(self, 'camera_node')
         self.connectNaoQi()
@@ -47,16 +46,16 @@ class CameraNode(NaoqiNode):
     def start(self):
         """
         Actual execution of the node.
-        It creates a service server for taking pictures and a publisher to the ImageWithDirection topic.
+        It creates a service server for taking pictures.
         """
         rospy.Service(rospy.get_param('take_picture_service'), TakePicture, self.handle_take_picture)
 
     def handle_take_picture(self, req):
         """
         The handler of the service request.
-        Acquires the image from the camera and publishes it on the ImageWithDirection topic.
+        Acquires the image from the camera and passes it as part of the request to the DetectImage service.
         The request is the direction at which the image must be taken.
-        The response is True when the picture is taken and published correctly, False otherwise.
+        The response is True when the picture is taken and processed by the detector correctly, False otherwise.
         """
         direction = req.direction
         result = self.videoDeviceProxy.getImageRemote(self.videoDevice)
@@ -81,6 +80,11 @@ class CameraNode(NaoqiNode):
         return TakePictureResponse(True)
 
     def detect_image(self, image, direction):
+        """
+        Calls the DetectImage service.
+        The request is the image taken and the current direction.
+        The response is the success of the service.
+        """
         service = rospy.get_param('detector_service')
         rospy.wait_for_service(service)
         try:
