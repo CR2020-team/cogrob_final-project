@@ -6,15 +6,17 @@
     <!-- <include file="$(find pepper_bringup)/launch/pepper_full_py.launch">
         <arg name="nao_ip" value="10.0.1.207" />
     </include> -->
-
+    
     <arg name="pepper_id"   default="1" />
 
-    <group if="$(eval pepper_id == '1')">
+    <group if="$(eval arg('pepper_id') == 1)">
          <param name="pip"  value="10.0.1.207" />
     </group>
-    <group if="$(eval pepper_id == '2')">
+    <group if="$(eval arg('pepper_id') == 2)">
          <param name="pip"  value="10.0.1.230" />
     </group>
+
+    <param name="pip"       value="10.0.1.230" />
     <param name="pport"     value="$(optenv NAO_PORT 9559)" />
 
     <param name="object_list_topic"     value="/object_list" />
