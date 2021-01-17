@@ -9,6 +9,8 @@ from pepper_msgs.srv import TakePicture, TakePictureResponse, DetectImage
 from sensor_msgs.msg import Image
 from std_msgs.msg import Header
 import genpy
+import ros_numpy
+import cv2
 
 
 class CameraNode(NaoqiNode):
@@ -74,6 +76,7 @@ class CameraNode(NaoqiNode):
         if not ret:
             rospy.logerr('Unable to detect objects for direction {}'.format(direction))
             return TakePictureResponse(False)
+        cv2.imwrite('/home/mivia/group26/image{}.jpg'.format(direction), ros_numpy.numpify(image))
         rospy.loginfo("Image for direction {} acquired".format(direction))
         return TakePictureResponse(True)
 
