@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-This node moves the robot head in the desidered position.
+This node moves the robot head in the desidered positions.
 """
 
 import numpy as np
@@ -26,8 +26,8 @@ class HeadNode(NaoqiNode):
     def connectNaoQi(self):
         """
         Connects the node to the NaoQi interface. The parameters pip and pport are stored in the parameter server.
-        The Proxy used is ALMotion, in order to make the robot head go to the desidered position
-        when the service is called.
+        The Proxyies used are ALMotion, in order to make the robot head go to the desidered position, and
+        ALRobotPosture, in order to make the robot go to a safe posture before moving the head.
         """
         self.pip = rospy.get_param('pip')
         self.pport = rospy.get_param('pport')
@@ -46,7 +46,7 @@ class HeadNode(NaoqiNode):
     def start(self):
         """
         Actual execution of the node.
-        Creates the service server.
+        Moves the head to the right, in front and to the left, calling the TakePicture service at each position.
         """
         self.postureProxy.goToPosture("StandInit", 1.0)
         rospy.sleep(rospy.Duration(1.0))
@@ -65,9 +65,8 @@ class HeadNode(NaoqiNode):
 
     def _look_at(self, direction):
         """
-        The handler of the service request.
-        The request is the desidered head position (right, front, left) represented as integers (-1, 0, 1).
-        The response is True when the position is reached (with an error less than 0.1 rad).
+        Makes the robot head to a given direction.
+        Sets the angles HeadPitch and HeadYaw to proper values, depending on the direction.
         """
         self.motionProxy.setStiffnesses("Head", 1.0)
         angles = {
