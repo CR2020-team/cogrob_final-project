@@ -61,7 +61,7 @@ class SpeakerNode(NaoqiNode):
         Upon receiving a request, it stores a part of the sentence to say.
         The TTS will be performed when the three directions are all into the sentence to say.
         In addition, if no object is detected on one side, the robot will say that it sees nothing.
-        The request is a list of detected objects and the direction at which the objects has been detected.
+        The request is a list of detected objects and the direction at which the objects have been detected.
         The response is True when the direction is valid.
         """
         direction = req.direction
