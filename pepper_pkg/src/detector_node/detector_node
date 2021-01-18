@@ -7,8 +7,8 @@ import os
 from threading import Lock
 import rospy
 from classmap import category_map as classmap  # https://gist.github.com/xhlulu/f7735970704b97fd0b72203628c1cc77
-from pepper_msgs.msg import DetectionArrayWithDirection, DetectionWithScore
-from pepper_msgs.srv import DetectImage
+from pepper_msgs.msg import DetectionWithScore
+from pepper_msgs.srv import DetectImage, DetectImageResponse, SayDetections
 import ros_numpy
 
 
@@ -37,15 +37,16 @@ class DetectorNode:
         """
         self._lock.acquire()
         detections = self.detector(image, self.SCORE_TH)
-        message = DetectionArrayWithDirection()
+        objects_detected = []
         for clabel, score in zip(detections['detection_classes'], detections['detection_scores']):
             if clabel in classmap:
                 d = DetectionWithScore()
                 d.clabel = classmap[clabel]
                 d.score = score
-                message.detections.append(d)
-        message.direction = direction
-        self._pub.publish(message)
+                objects_detected.append(d)
+        ret = self.say_detections(objects_detected, direction)
+        if not ret:
+            raise KeyError('Unable to recognize detections at direction {}'.format(direction))
         if verbose:
             rospy.loginfo("{} objects detected in image at direction {}".format(len(message.detections), direction))
         self._lock.release()
@@ -57,7 +58,6 @@ class DetectorNode:
         It also creates a service server for detect objects in a picture.
         """
         rospy.Service(rospy.get_param('detector_service'), DetectImage, self.handle_detector)
-        self._pub = rospy.Publisher(rospy.get_param('object_list_topic'), DetectionArrayWithDirection, queue_size=0, latch=False)
         self._verbose = verbose
         DET_PATH = os.path.join(os.path.dirname(__file__), 'models', detector_model_name, 'saved_model')
         rospy.loginfo("Loading model...")
@@ -80,9 +80,24 @@ class DetectorNode:
                 self(ros_numpy.numpify(req.image), req.direction, self._verbose)
             else:
                 self._images[req.direction] = ros_numpy.numpify(req.image)
-            return True
+            return DetectImageResponse(True)
         except (KeyError, ValueError) as exc:
             rospy.logerr('Unable to interpret image at direction {}: {}'.format(req.direction, exc))
+            return DetectImageResponse(False)
+
+    def say_detections(self, detections, direction):
+        """
+        Calls the SayDetections service.
+        The request is the detected objects and the current direction.
+        The response is the success of the service.
+        """
+        service = rospy.get_param('speaker_service')
+        rospy.wait_for_service(service)
+        try:
+            say_detections_request = rospy.ServiceProxy(service, SayDetections)
+            return say_detections_request(detections, direction).success
+        except rospy.ServiceException as exc:
+            print("Service call failed: %s" % exc)
             return False
 
 

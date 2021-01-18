@@ -96,8 +96,8 @@ class HeadNode(NaoqiNode):
         service = rospy.get_param('take_picture_service')
         rospy.wait_for_service(service)
         try:
-            take_picture = rospy.ServiceProxy(service, TakePicture)
-            return take_picture(direction).ready
+            take_picture_request = rospy.ServiceProxy(service, TakePicture)
+            return take_picture_request(direction).success
         except rospy.ServiceException as exc:
             print("Service call failed: %s" % exc)
             return False

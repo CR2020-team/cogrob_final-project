@@ -9,4 +9,4 @@ int8                    direction
 
 ---
 
-bool                    ready
+bool                    success

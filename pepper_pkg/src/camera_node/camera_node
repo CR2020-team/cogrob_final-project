@@ -88,8 +88,8 @@ class CameraNode(NaoqiNode):
         service = rospy.get_param('detector_service')
         rospy.wait_for_service(service)
         try:
-            detect_image = rospy.ServiceProxy(service, DetectImage)
-            return detect_image(image, direction).ready
+            detect_image_request = rospy.ServiceProxy(service, DetectImage)
+            return detect_image_request(image, direction).success
         except rospy.ServiceException as exc:
             print("Service call failed: %s" % exc)
             return False

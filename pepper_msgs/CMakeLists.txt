@@ -52,7 +52,6 @@ find_package(catkin REQUIRED
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  DetectionArrayWithDirection.msg
   DetectionWithScore.msg
 )
 
@@ -60,6 +59,7 @@ add_message_files(
 add_service_files(
   FILES
   DetectImage.srv
+  SayDetections.srv
   TakePicture.srv
 )
 

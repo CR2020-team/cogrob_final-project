@@ -7,7 +7,7 @@ import inflect
 from collections import Counter
 import rospy
 from naoqi_driver.naoqi_node import NaoqiNode
-from pepper_msgs.msg import DetectionArrayWithDirection
+from pepper_msgs.srv import SayDetections, SayDetectionsResponse
 
 
 class SpeakerNode(NaoqiNode):
@@ -54,18 +54,22 @@ class SpeakerNode(NaoqiNode):
         The only operation performed when the node starts is the subscription to the DetectionArrayWithDirection topic
         and the linking of the callback.
         """
-        rospy.Subscriber(rospy.get_param('object_list_topic'), DetectionArrayWithDirection, self.rcv_detections_cb)
+        rospy.Service(rospy.get_param('speaker_service'), SayDetections, self.handle_speaker)
 
-    def rcv_detections_cb(self, msg):
+    def handle_speaker(self, req):
         """
         Actual execution of the node.
-        Upon receiving a new message on the topic, it stores a part of the sentence to say.
+        Upon receiving a request, it stores a part of the sentence to say.
         The TTS will be performed when the three directions are all into the sentence to say.
         In addition, if no object is detected on one side, the robot will say that it sees nothing.
         """
-        direction = msg.direction
+        direction = req.direction
+        if direction not in self._text_components.keys():
+            rospy.logerr('Direction {} not valid. Only {} allowed.'.format(direction, self._text_components.keys()))
+            return SayDetectionsResponse(False)
+
         self._counter += 1
-        d = Counter(detection.clabel for detection in msg.detections)
+        d = Counter(detection.clabel for detection in req.detections)
         items = [self._item_to_text(key, value) for key, value in d.items()]
         if len(items) == 0:
             self._text_components[direction] = "nothing"
@@ -83,6 +87,8 @@ class SpeakerNode(NaoqiNode):
             self.animatedSpeechProxy.say(text)
 
             self._counter = 0
+
+        return SayDetectionsResponse(True)
 
     def _item_to_text(self, key, value):
         """

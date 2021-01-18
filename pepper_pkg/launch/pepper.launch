@@ -19,10 +19,9 @@
     <param name="pip"       value="10.0.1.230" />
     <param name="pport"     value="$(optenv NAO_PORT 9559)" />
 
-    <param name="object_list_topic"     value="/object_list" />
-
-    <param name="detector_service"      value="/detect_image" />
-    <param name="take_picture_service"  value="/take_picture" />
+    <param name="take_picture_service"  value="camera_node/take_picture" />
+    <param name="detector_service"      value="detector_node/detect_image" />
+    <param name="speaker_service"       value="speaker_node/say_detections" />
 
     <node name="camera"     pkg="pepper_pkg"        type="camera_node"     output="screen" />
     <node name="detector"   pkg="pepper_pkg"        type="detector_node"   output="screen" />
