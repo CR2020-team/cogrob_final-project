@@ -30,7 +30,8 @@ The project is organized into 4 ROS nodes:
 
 ### Code
 
-For futher information about the implementation, please refer to the in-code documentation. Every node is fully documentated in the related file.
+For futher information about the implementation, please refer to the in-code documentation. Every node is fully
+documentated in the related file.
 
 ### Messages
 
@@ -40,11 +41,11 @@ The following messages are defined in the [msg](pepper_msgs/msg) folder.
 
 This message is used by only one node:
 
-* [detector_node](../../pepper_pkg/src/detector_node/detector_node):
+* [detector_node](pepper_pkg/src/detector_node/detector_node):
   * For each object it detects, it creates a message with the following fields:
     * `clabel`: the class label of the object
     * `score`: the confidence score for the detection
-  * This message is then added to the `detections` component of the [SayDetections](../srv/README.md#SayDetections)
+  * This message is then added to the `detections` component of the [SayDetections](README.md#SayDetections)
     service request
     
 ### Services
@@ -53,27 +54,27 @@ The following services are defined in the [srv](pepper_msgs/srv) folder.
 
 #### TakePicture
 
-This service is served by the [camera node](../../pepper_pkg/src/camera_node/camera_node) and is requested by the
-[head node](../../pepper_pkg/src/head_node/head_node) in order to take a picture. Since the picture will be forwarded to
+This service is served by the [camera node](pepper_pkg/src/camera_node/camera_node) and is requested by the
+[head node](pepper_pkg/src/head_node/head_node) in order to take a picture. Since the picture will be forwarded to
 the [DetectImage](README.md#DetectImage) service, the requests take as parameter the current position of the head.
 
-* [camera_node](../../pepper_pkg/src/camera_node/camera_node) upon receiving a request, takes the picture, forwards it
+* [camera_node](pepper_pkg/src/camera_node/camera_node) upon receiving a request, takes the picture, forwards it
   to the [DetectImage](README.md#DetectImage) service along with the direction and sends a `True` response if and only
   if the operation is successful.
-* [head_node](../../pepper_pkg/src/head_node/head_node) is the only service client. Before taking a picture, the node
+* [head_node](pepper_pkg/src/head_node/head_node) is the only service client. Before taking a picture, the node
   must be sure that the head is in the right position.
 
 #### DetectImage
 
-This service is served by the [detector node](../../pepper_pkg/src/detector_node/detector_node) and is requested by the
-[camera node](../../pepper_pkg/src/camera_node/camera_node) in order to detect objects in a picture. Since the objects
+This service is served by the [detector node](pepper_pkg/src/detector_node/detector_node) and is requested by the
+[camera node](pepper_pkg/src/camera_node/camera_node) in order to detect objects in a picture. Since the objects
 will be forwarded to the [SayDetections](README.md#SayDetections) service, the requests take as parameter the direction
 at which the given image has been taken.
 
-* [detector_node](../../pepper_pkg/src/detector_node/detector_node) upon receiving a request, gives the picture as input
+* [detector_node](pepper_pkg/src/detector_node/detector_node) upon receiving a request, gives the picture as input
   to the detector model, creates a [SayDetections](README.md#SayDetections) service request containing the detected
   objects; sends a `True` response if and only if the operation is successful.
-* [camera_node](../../pepper_pkg/src/camera_node/camera_node) is the only service client. Creates a request by passing
+* [camera_node](pepper_pkg/src/camera_node/camera_node) is the only service client. Creates a request by passing
   as parameter the image taken and its proper direction
 
 #### SayDetections
