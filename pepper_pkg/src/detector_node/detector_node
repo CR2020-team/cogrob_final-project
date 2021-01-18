@@ -75,11 +75,15 @@ class DetectorNode:
         The request is image and the direction at which the image has been taken.
         The response is True when the picture is processed by the detector correctly.
         """
-        if self._ready:
-            self(ros_numpy.numpify(req.image), req.direction, self._verbose)
-        else:
-            self._images[req.direction] = ros_numpy.numpify(req.image)
-        return True
+        try:
+            if self._ready:
+                self(ros_numpy.numpify(req.image), req.direction, self._verbose)
+            else:
+                self._images[req.direction] = ros_numpy.numpify(req.image)
+            return True
+        except (KeyError, ValueError) as exc:
+            rospy.logerr('Unable to interpret image at direction {}: {}'.format(req.direction, exc))
+            return False
 
 
 DetectorNode().start(verbose=True)
