@@ -16,7 +16,6 @@
          <param name="pip"  value="10.0.1.230" />
     </group>
 
-    <param name="pip"       value="10.0.1.230" />
     <param name="pport"     value="$(optenv NAO_PORT 9559)" />
 
     <param name="take_picture_service"  value="camera_node/take_picture" />

@@ -50,6 +50,8 @@ class HeadNode(NaoqiNode):
         """
         # 0.5 is 50% of the max speed
         self.postureProxy.goToPosture("StandInit", 0.5)
+        # Sets the Head stiffness to maximum (1.0) in 0.5 second
+        self.motionProxy.stiffnessInterpolation("Head", 1.0, 0.5)
         rospy.sleep(rospy.Duration(1.0))
         for direction in [-1, 0, 1]:
             # Look at right, front, left
@@ -62,29 +64,20 @@ class HeadNode(NaoqiNode):
             ret = self._take_picture(direction)
             if not ret:
                 raise rospy.ROSException('Unable to take picture at direction {}'.format(direction))
-        # 0.5 is 50% of the max speed
-        self.postureProxy.goToPosture("StandInit", 0.5)
+        # 0.25 is 25% of the max speed
+        self.postureProxy.goToPosture("StandInit", 0.25)
 
     def _look_at(self, direction):
         """
         Makes the robot head to a given direction.
         Sets the angles HeadPitch and HeadYaw to proper values, depending on the direction.
         """
-        # Sets the Head stiffness to maximum (1.0) in 0.5 second
-        self.motionProxy.stiffnessInterpolation("Head", 1.0, 0.5)
         angles = {
             "HeadPitch": np.deg2rad(15),
             "HeadYaw": self.CAMERA_FOV * direction,
         }
         fractionMaxSpeed = 0.25
         self.motionProxy.angleInterpolationWithSpeed(angles.keys(), angles.values(), fractionMaxSpeed)
-        """
-        while True:
-            rospy.sleep(rospy.Duration(0.1))
-            currentAngles = self.motionProxy.getAngles(angles.keys(), True)
-            if np.all(np.absolute(np.array(angles.values()) - np.array(currentAngles)) < 1e-1):
-                break
-        """
         return True
 
     def _take_picture(self, direction):
