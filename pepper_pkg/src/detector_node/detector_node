@@ -11,6 +11,8 @@ from pepper_msgs.msg import DetectionArrayWithDirection, DetectionWithScore
 from pepper_msgs.srv import DetectImage
 import ros_numpy
 
+import efficientdet.inference
+
 
 class DetectorNode:
     """Class used as an abstraction of the Node"""
@@ -18,7 +20,7 @@ class DetectorNode:
     """Detections with a confidence score lower than SCORE_TH will not be considered as actual detections."""
     SCORE_TH = 0.45
 
-    __slots__ = 'detector', '_pub', '_verbose', '_images', '_ready', '_lock'
+    __slots__ = 'detector', '_pub', '_verbose', '_images', '_ready', '_lock', 'driver'
 
     def __init__(self):
         """
@@ -36,7 +38,7 @@ class DetectorNode:
         Publishes a message containing DetectionArrayWithDirection.
         """
         self._lock.acquire()
-        detections = self.detector(image, self.SCORE_TH)
+        detections = self.driver.serve_files([image])
         message = DetectionArrayWithDirection()
         for clabel, score in zip(detections['detection_classes'], detections['detection_scores']):
             if clabel in classmap:
@@ -58,11 +60,10 @@ class DetectorNode:
         rospy.Service(rospy.get_param('detector_service'), DetectImage, self.handle_detector)
         self._pub = rospy.Publisher(rospy.get_param('object_list_topic'), DetectionArrayWithDirection, queue_size=0, latch=False)
         self._verbose = verbose
-        DET_PATH = os.path.join(os.path.dirname(__file__), 'models', detector_model_name, 'saved_model')
+        DET_PATH = os.path.join(os.path.dirname(__file__), 'models', detector_model_name)
         rospy.loginfo("Loading model...")
-        from detector import Detector
-        self.detector = Detector(DET_PATH)
-        self._ready = True
+        self.driver = inference.ServingDriver(DET_PATH, DET_PATH, batch_size=1, min_score_thresh=self.SCORE_TH)
+        self.driver.build()
         rospy.loginfo("Model loaded!")
         for direction, image in self._images.items():
             self(image, direction, self._verbose)
