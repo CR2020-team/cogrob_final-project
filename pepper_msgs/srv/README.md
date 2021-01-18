@@ -21,7 +21,7 @@ at which the given image has been taken.
 
 * [detector_node](../../pepper_pkg/src/detector_node/detector_node) upon receiving a request, gives the picture as input
   to the detector model, creates a [SayDetections](README.md#SayDetections) service request containing the detected
-  objects; sends a `True` response if and only if the operation is successful.
+  objects and sends a `True` response if and only if the operation is successful.
 * [camera_node](../../pepper_pkg/src/camera_node/camera_node) is the only service client. Creates a request by passing
   as parameter the image taken and its proper direction
 
@@ -32,11 +32,11 @@ This service is served by the [speaker_node](../../pepper_pkg/src/speaker_node/s
 string.
 
 * [speaker_node](../../pepper_pkg/src/speaker_node/speaker_node): upon receiving a request, creates a string depending 
-  on the detected objects and the direction at which the objects have been detected.
+  on the detected objects and the direction at which the objects have been detected and sends a `True` response if and
+  only if the direction is valid
   * For example:
     > I can see a bottle on the right, a PC in front of me, 2 TVs on the left.
 * [detector_node](../../pepper_pkg/src/detector_node/detector_node) is the only service client. Creates a request by 
   passing as parameters:
   * `detections`: the classes of the objects seen in the image, along with the confidence scores
   * `direction`: the direction at which the image has been taken
-    
