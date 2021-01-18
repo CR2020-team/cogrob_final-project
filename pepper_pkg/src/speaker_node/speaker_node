@@ -51,17 +51,18 @@ class SpeakerNode(NaoqiNode):
     def start(self):
         """
         Actual execution of the node.
-        The only operation performed when the node starts is the subscription to the DetectionArrayWithDirection topic
-        and the linking of the callback.
+        It creates a service server for converting detected objects into a string.
         """
         rospy.Service(rospy.get_param('speaker_service'), SayDetections, self.handle_speaker)
 
     def handle_speaker(self, req):
         """
-        Actual execution of the node.
+        The handler of the service request.
         Upon receiving a request, it stores a part of the sentence to say.
         The TTS will be performed when the three directions are all into the sentence to say.
         In addition, if no object is detected on one side, the robot will say that it sees nothing.
+        The request is a list of detected objects and the direction at which the objects has been detected.
+        The response is True when the direction is valid.
         """
         direction = req.direction
         if direction not in self._text_components.keys():

@@ -54,8 +54,7 @@ class DetectorNode:
     def start(self, detector_model_name='efficientdet_d1_coco17_tpu-32', verbose=False):
         """
         Actual execution of the node.
-        Creates a publisher to the DetectionArrayWithDirection topic and loads the detector model.
-        It also creates a service server for detect objects in a picture.
+        Loads the detector model and creates a service server for detecting objects in a picture.
         """
         rospy.Service(rospy.get_param('detector_service'), DetectImage, self.handle_detector)
         self._verbose = verbose
@@ -72,8 +71,8 @@ class DetectorNode:
         """
         The handler of the service request.
         If the model is loaded, performs a detection on the image. Otherwise, appends the image in a queue.
-        The request is image and the direction at which the image has been taken.
-        The response is True when the picture is processed by the detector correctly.
+        The request is an image and the direction at which the image has been taken.
+        The response is True when the picture is processed by the detector correctly and the direction is valid.
         """
         try:
             if self._ready:
