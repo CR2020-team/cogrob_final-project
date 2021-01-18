@@ -26,7 +26,7 @@ class HeadNode(NaoqiNode):
     def connectNaoQi(self):
         """
         Connects the node to the NaoQi interface. The parameters pip and pport are stored in the parameter server.
-        The Proxyies used are ALMotion, in order to make the robot head go to the desidered position, and
+        The Proxies used are ALMotion, in order to make the robot head go to the desidered position, and
         ALRobotPosture, in order to make the robot go to a safe posture before moving the head.
         """
         self.pip = rospy.get_param('pip')
