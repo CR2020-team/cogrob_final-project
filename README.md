@@ -114,7 +114,14 @@ chmod +x setup.bash
 
 ### Launch
 
-To use the software, just run
+To use the software, first source the workspace with
+
+```shel
+cd CR2020_GRUPPO26_WS
+source devel/setup.bash
+```
+
+Then run
 
 ```shell
 roslaunch pepper_pkg pepper.launch pepper_id:=id
