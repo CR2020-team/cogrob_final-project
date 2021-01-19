@@ -112,4 +112,4 @@ To use the software, just run
 roslaunch pepper_pkg pepper.launch pepper_id:=id
 ```
 
-Where `id` is either 1 or 2 depending on which pepper robot the software bill be executed. If not specified, `pepper_id` is 1.
+Where `id` is either 1 or 2 depending on which Pepper robot the software will be executed. If not specified, `pepper_id` is 1.
