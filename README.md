@@ -99,7 +99,7 @@ string.
 
 To set up the workspace and build all the dependencies, run the following commands: 
 ```shell
-wget -O setup.bash --no-check-certificate --content-disposition https://github.com/CR2020-team/cogrob_final-project/blob/master/setup.bash
+curl -o setup.bash https://raw.githubusercontent.com/CR2020-team/cogrob_final-project/master/setup.bash
 chmod +x setup.bash
 ./setup.bash
 ```
