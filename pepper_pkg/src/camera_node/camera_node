@@ -11,7 +11,7 @@ from std_msgs.msg import Header
 import genpy
 import ros_numpy
 import cv2
-import sys
+import os
 
 
 class CameraNode(NaoqiNode):
@@ -77,7 +77,7 @@ class CameraNode(NaoqiNode):
             rospy.logerr('Unable to detect objects for direction {}'.format(direction))
             return TakePictureResponse(False)
         cv2.imwrite(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                 'image{}.jpg'.format(direction), ros_numpy.numpify(image)))
+                                 'image{}.jpg'.format(direction)), ros_numpy.numpify(image))
         rospy.loginfo("Image for direction {} acquired".format(direction))
         return TakePictureResponse(True)
 

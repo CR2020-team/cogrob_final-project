@@ -44,11 +44,11 @@ class DetectorNode:
                 d.clabel = classmap[clabel]
                 d.score = score
                 objects_detected.append(d)
+        if verbose:
+            rospy.loginfo("{} objects detected in image at direction {}".format(len(objects_detected), direction))
         ret = self.say_detections(objects_detected, direction)
         if not ret:
             raise KeyError('Unable to recognize detections at direction {}'.format(direction))
-        if verbose:
-            rospy.loginfo("{} objects detected in image at direction {}".format(len(objects_detected), direction))
         self._lock.release()
 
     def start(self, detector_model_name='efficientdet_d1_coco17_tpu-32', verbose=False):
