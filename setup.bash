@@ -38,5 +38,3 @@ cd ..
 cd speaker_node
 chmod +x speaker_node
 cd ../../../..
-pwd
-source devel/setup.bash
