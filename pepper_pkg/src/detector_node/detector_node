@@ -33,7 +33,7 @@ class DetectorNode:
     def __call__(self, image, direction, verbose=False):
         """
         Runs inference in image, performing detections on it.
-        Publishes a DetectionArrayWithDirection message containing direction and the detected objects.
+        Makes a request to the SayDetections service, passing as input the detected objects and direction.
         """
         self._lock.acquire()
         detections = self.detector(image, self.SCORE_TH)

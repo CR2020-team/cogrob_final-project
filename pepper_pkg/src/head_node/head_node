@@ -69,7 +69,7 @@ class HeadNode(NaoqiNode):
 
     def _look_at(self, direction):
         """
-        Makes the robot head to a given direction.
+        Makes the robot head go to a given direction.
         Sets the angles HeadPitch and HeadYaw to proper values, depending on the direction.
         """
         angles = {

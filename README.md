@@ -116,7 +116,7 @@ chmod +x setup.bash
 
 To use the software, first source the workspace with
 
-```shel
+```shell
 cd CR2020_GRUPPO26_WS
 source devel/setup.bash
 ```
