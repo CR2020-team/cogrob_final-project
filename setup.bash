@@ -18,6 +18,9 @@ cd ..
 echo 'D=$(realpath src/pynaoqi-python2.7-2.5.7.1-linux64)' >> devel/setup.bash
 echo 'export PYTHONPATH=${PYTHONPATH}:$D/lib/python2.7/site-packages' >> devel/setup.bash
 echo 'export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:$D/lib' >> devel/setup.bash
+chmod +x src/naoqi_bridge/naoqi_driver_py/cfg/NaoqiSpeech.cfg
+chmod +x src/naoqi_bridge/naoqi_sensors_py/cfg/NaoqiMicrophone.cfg
+chmod +x src/naoqi_bridge/naoqi_sensors_py/cfg/NaoqiCamera.cfg
 catkin config --blacklist pepper_pkg pepper_msgs
 catkin build
 catkin config --no-blacklist
@@ -35,4 +38,5 @@ cd ..
 cd speaker_node
 chmod +x speaker_node
 cd ../../../..
+pwd
 source devel/setup.bash
