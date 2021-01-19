@@ -95,9 +95,17 @@ string.
     
 ## Usage
 
+To download and run the software, you need the tool `p7zip`. To install it, run the following commands:
+
+```shell
+sudo apt-get update
+sudo apt-get install p7zip-full
+```
+
 ### Setup
 
 To set up the workspace and build all the dependencies, run the following commands: 
+
 ```shell
 curl -o setup.bash https://raw.githubusercontent.com/CR2020-team/cogrob_final-project/master/setup.bash
 chmod +x setup.bash
