@@ -95,9 +95,20 @@ string.
     
 ## Usage
 
+### Setup
+
+To set up the workspace and build all the dependencies, run the following commands: 
+```shell
+wget -O setup.bash --no-check-certificate --content-disposition https://github.com/CR2020-team/cogrob_final-project/blob/master/setup.bash
+chmod +x setup.bash
+./setup.bash
+```
+
+### Launch
+
 To use the software, just run
 
-``` bash
+```shell
 roslaunch pepper_pkg pepper.launch pepper_id:=id
 ```
 
