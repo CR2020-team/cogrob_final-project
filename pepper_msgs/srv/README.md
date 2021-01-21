@@ -28,7 +28,7 @@ at which the given image has been taken.
 ### SayDetections
 
 This service is served by the [speaker_node](../../pepper_pkg/src/speaker_node/speaker_node) and is requested by the 
-[detector_node](../../pepper_pkg/src/detector_node/detector_node) in order to convert a list o detected objects into a
+[detector_node](../../pepper_pkg/src/detector_node/detector_node) in order to convert a list of detected objects into a
 string.
 
 * [speaker_node](../../pepper_pkg/src/speaker_node/speaker_node): upon receiving a request, creates a string depending 
